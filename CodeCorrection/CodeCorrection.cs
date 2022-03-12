@@ -2,24 +2,25 @@
 
 public class CodeCorrection
 {
-    private static readonly int msgSize = 4;
-    private static readonly int paritySize = 3;
+    private static readonly int msgSize = 8;
+    private static readonly int paritySize = 4;
     private static readonly int encodedMsgSize = msgSize + paritySize;
 
     
     private static readonly int[,] H =
     {
-        {1, 1, 1, 0, 1, 0, 0},
-        {0, 1, 1, 1, 0, 1, 0},
-        {1, 1, 0, 1, 0, 0, 1}
+        {1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0},
+        {0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0},
+        {1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0},
+        {0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 1}
     };
 
     public static List<int> Encode(List<int> msg)
     {
-        for (var i = 0; i < 3; i++)
+        for (var i = 0; i < paritySize; i++)
         {
             var parityBit = 0;
-            for (var j = 0; j < 4; j++)
+            for (var j = 0; j < msgSize; j++)
             {
                 parityBit += H[i, j] * msg.ElementAt(j);
             }

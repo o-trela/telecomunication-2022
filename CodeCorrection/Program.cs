@@ -7,7 +7,7 @@ public class Program {
     {
         List<int> msg = new List<int>
         {
-            0, 0, 1, 1
+            0, 0, 0, 1, 1, 0, 1, 1
         };
         Console.Write("Message: ");
         msg.ForEach(i => Console.Write(i));
