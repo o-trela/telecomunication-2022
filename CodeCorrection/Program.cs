@@ -5,24 +5,24 @@ public class Program {
     
     static public void Main(String[] args)
     {
-        List<int> msg = new List<int>
+        var msg = new List<int>
         {
             0, 0, 0, 1, 1, 0, 1, 1
         };
         Console.Write("Message: ");
-        msg.ForEach(i => Console.Write(i));
+        msg.ForEach(Console.Write);
         
         var encodedList = CodeCorrection.Encode(msg);
         Console.Write("\nEncoded: ");
-        encodedList.ForEach(i => Console.Write(i));
+        encodedList.ForEach(Console.Write);
         
         Console.Write("\nNoise: ");
         // making noise
-        List<int> noiseList = new List<int>();
-        int index = 0;
+        var noiseList = new List<int>();
+        var index = 0;
         foreach (var bit in encodedList)
         {
-            if (index == 3)
+            if (index is 4 or 1)
             {
                 noiseList.Add((bit + 1) % 2);
                 index++;
@@ -31,9 +31,9 @@ public class Program {
             noiseList.Add(bit);
             index++;
         }
-        noiseList.ForEach(i => Console.Write(i));
+        noiseList.ForEach(Console.Write);
 
         Console.Write("\nDecoded: ");
-        CodeCorrection.Decode(msg).ForEach(i => Console.Write(i));
+        CodeCorrection.Decode(noiseList).ForEach(Console.Write);
     }
 }
