@@ -7,22 +7,22 @@ public class Program {
     {
         var msg = new List<int>
         {
-            0, 0, 0, 1, 1, 0, 1, 1
+            0, 1, 0, 1, 1, 0, 1, 1
         };
-        Console.Write("Message: ");
+        Console.Write("Message:\t");
         msg.ForEach(Console.Write);
         
         var encodedList = CodeCorrection.Encode(msg);
-        Console.Write("\nEncoded: ");
+        Console.Write("\nEncoded:\t");
         encodedList.ForEach(Console.Write);
         
-        Console.Write("\nNoise: ");
+        Console.Write("\nNoise:\t \t");
         // making noise
         var noiseList = new List<int>();
         var index = 0;
         foreach (var bit in encodedList)
         {
-            if (index is 4 or 1)
+            if (index is 7 or 3)
             {
                 noiseList.Add((bit + 1) % 2);
                 index++;
@@ -33,7 +33,7 @@ public class Program {
         }
         noiseList.ForEach(Console.Write);
 
-        Console.Write("\nDecoded: ");
+        Console.Write("\nDecoded:\t");
         CodeCorrection.Decode(noiseList).ForEach(Console.Write);
     }
 }
