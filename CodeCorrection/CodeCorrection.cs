@@ -20,6 +20,7 @@ public class CodeCorrection
 
     public static List<int> Encode(List<int> msg)
     {
+        var clonedMsg = Util.Clone(msg);
         for (var i = 0; i < ParitySize; i++)
         {
             var parityBit = 0;
@@ -28,9 +29,9 @@ public class CodeCorrection
                 parityBit += H[i, j] * msg.ElementAt(j);
             }
             parityBit %= 2;
-            msg.Add(parityBit);
+            clonedMsg.Add(parityBit);
         }
-        return msg;
+        return clonedMsg;
     }
 
     public static List<int> Decode(List<int> msg)

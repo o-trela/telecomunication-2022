@@ -35,5 +35,8 @@ public class Program {
 
         Console.Write("\nDecoded:\t");
         CodeCorrection.Decode(noiseList).ForEach(Console.Write);
+
+         Reader.EncodeFile(
+            @"C:\Users\oskar\OneDrive\Desktop\Telekomunikacja\telecomunication-2022\CodeCorrection\text.txt");
     }
 }
