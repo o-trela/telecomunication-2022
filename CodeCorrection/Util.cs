@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace CodeCorrection;
+namespace Zadanie_1;
 
 public static class Util
 {

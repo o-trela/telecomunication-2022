@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Text;
 
-namespace CodeCorrection;
+namespace Zadanie_1;
 
-public class Reader
+public static class FileReader
 {
     private static readonly string BaseDataDirPath = 
         Path.Combine(
@@ -61,7 +61,7 @@ public class Reader
             
             if (i % 8 == 0 && i != 0 || i == bitsList.Count - 1)
             {
-                var encodedBuffer = CodeCorrection.Encode(buffer);
+                var encodedBuffer = Code.Encode(buffer);
                 encodedBuffer.ForEach(value => stringBuilder.Append(value));
                 stringBuilder.AppendLine();
                 buffer.Clear();
@@ -100,7 +100,7 @@ public class Reader
                 var bitInt = Int32.Parse(bit.ToString());
                 chunk.Add(bitInt);
             }
-            var decodedChunk = CodeCorrection.Decode(chunk);
+            var decodedChunk = Code.Decode(chunk);
             decodedChunk.ForEach(value => bits.Add(value == 1));
             
             chunk.Clear();

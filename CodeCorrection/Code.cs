@@ -1,6 +1,6 @@
-﻿namespace CodeCorrection;
+﻿namespace Zadanie_1;
 
-public class CodeCorrection
+public static class Code
 {
     private const int MsgSize = 8;
     private const int ParitySize = 8;

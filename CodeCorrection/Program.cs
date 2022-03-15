@@ -1,4 +1,4 @@
-﻿namespace CodeCorrection;
+﻿namespace Zadanie_1;
 
 /// <instruction>
 /// Coding algorythm
@@ -11,9 +11,9 @@
 /// Encoded and decoded files will be created in that folder ass well.
 /// </instruction>
 
-public class Program {
+public static class Program {
     
-    static public void Main(String[] args)
+    public static void Main(String[] args)
     {
     string baseDataDirPath = 
         Path.Combine(
@@ -33,12 +33,12 @@ public class Program {
             case 1:
                 Console.Write("Enter file name to encode: ");
                 filename = Console.ReadLine() ?? throw new ArgumentException();
-                Reader.EncodeFile(filename);
+                FileReader.EncodeFile(filename);
                 break;
             case 2:
                 Console.Write("Enter file name to decode: ");
                 filename = Console.ReadLine() ?? throw new ArgumentException();
-                Reader.DecodeFile(filename);
+                FileReader.DecodeFile(filename);
                 break;
             default:
                 Console.WriteLine("Incorrect choice.");
