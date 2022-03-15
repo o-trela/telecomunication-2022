@@ -5,11 +5,21 @@ namespace CodeCorrection;
 
 public class Reader
 {
+    private static readonly string BaseDataDirPath = 
+        Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "telekomunikacja_2022");
+    
     private static List<int> ReadFile(string filename)
     {
+        var filePath = Path.Combine(BaseDataDirPath, filename);
+        if (!File.Exists(filePath))
+        {
+            throw new FileNotFoundException("File not found!");
+        }
+        
         List<int> bitsList = new();
 
-        var bytes = File.ReadAllBytes(filename);
+        var bytes = File.ReadAllBytes(filePath);
         var bits = new BitArray(bytes);
         
         foreach (bool bit in bits)
@@ -23,16 +33,27 @@ public class Reader
 
     public static void EncodeFile(string filename)
     {
-        var bitsList = ReadFile(filename);
+        var filePath = Path.Combine(BaseDataDirPath, filename);
+        List<int> bitsList;
+        try
+        {
+            bitsList = ReadFile(filePath);
+        }
+        catch (FileNotFoundException e)
+        {
+            Console.WriteLine(e.Message);
+            return;
+        }
+        
         var buffer = new List<int>();
         var stringBuilder = new StringBuilder();
         using var writer =
             new StreamWriter(
-                @"C:\Users\oskar\OneDrive\Desktop\Telekomunikacja\telecomunication-2022\CodeCorrection\encoded_text.txt");
+                Path.Combine(BaseDataDirPath, "encoded_" + filename));
         
         for (var i = 0; i < bitsList.Count; i++)
         {
-            // needs to be cleared
+            // TODO: needs to be cleared
             if (i == bitsList.Count - 1)
             {
                 buffer.Add(bitsList.ElementAt(i));
@@ -52,15 +73,26 @@ public class Reader
                 buffer.Add(bitsList.ElementAt(i));
             }
         }
+
+        // TODO: it can be done better
+        stringBuilder.Remove(stringBuilder.Length - 2, 2);
         
         writer.WriteLine(stringBuilder);
+        Console.WriteLine("File encoded as " + Path.Combine(BaseDataDirPath, "encoded_" + filename));
     }
 
     public static void DecodeFile(string filename)
     {
+        var filePath = Path.Combine(BaseDataDirPath, filename);
+        if (!File.Exists(filePath))
+        {
+            Console.WriteLine("File not found!");
+            return;
+        }
+        
         var chunk = new List<int>();
         var bits = new List<bool>();
-        foreach (var readLine in File.ReadLines(filename))
+        foreach (var readLine in File.ReadLines(filePath))
         {
             for (var i = 0; i < readLine.Length; i++)
             {
@@ -78,6 +110,7 @@ public class Reader
         var bitArray = new BitArray(bits.ToArray());
         byte[] bytes = new byte[bitArray.Length / 8];
         bitArray.CopyTo(bytes, 0);
-        File.WriteAllBytes(@"C:\Users\oskar\OneDrive\Desktop\Telekomunikacja\telecomunication-2022\CodeCorrection\decoded_tele.png", bytes);
+        File.WriteAllBytes(Path.Combine(BaseDataDirPath, "decoded_" + filename), bytes);
+        Console.WriteLine("File decoded as " + Path.Combine(BaseDataDirPath, "decoded_" + filename));
     }
 }

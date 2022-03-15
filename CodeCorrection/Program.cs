@@ -1,44 +1,50 @@
-﻿using System;
-namespace CodeCorrection;
+﻿namespace CodeCorrection;
+
+/// <instruction>
+/// Coding algorythm
+///
+/// Program creates "telekomunikacja_2022" folder in your documents folder.
+/// That will be the working space for all the files you want to encode or decode.
+///
+/// You will be asked for the file name.
+/// The program will search for it in "telekomunikacja_2022" folder in your documents.
+/// Encoded and decoded files will be created in that folder ass well.
+/// </instruction>
 
 public class Program {
     
     static public void Main(String[] args)
     {
-        /*var msg = new List<int>
+    string baseDataDirPath = 
+        Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "telekomunikacja_2022");
+        Util.CreateDirectory(baseDataDirPath);
+
+        string filename;
+
+        Console.WriteLine("Choose option:");
+        Console.WriteLine("1. Encode file");
+        Console.WriteLine("2. Decode file");
+        Console.Write("Choice: ");
+
+        var choice = Util.ReadInt32();
+        switch (choice)
         {
-            0, 1, 0, 1, 1, 0, 1, 1
-        };
-        Console.Write("Message:\t");
-        msg.ForEach(Console.Write);
-        
-        var encodedList = CodeCorrection.Encode(msg);
-        Console.Write("\nEncoded:\t");
-        encodedList.ForEach(Console.Write);
-        
-        Console.Write("\nNoise:\t \t");
-        // making noise
-        var noiseList = new List<int>();
-        var index = 0;
-        foreach (var bit in encodedList)
-        {
-            if (index is 7 or 3)
-            {
-                noiseList.Add((bit + 1) % 2);
-                index++;
-                continue;
-            }
-            noiseList.Add(bit);
-            index++;
+            case 1:
+                Console.Write("Enter file name to encode: ");
+                filename = Console.ReadLine() ?? throw new ArgumentException();
+                Reader.EncodeFile(filename);
+                break;
+            case 2:
+                Console.Write("Enter file name to decode: ");
+                filename = Console.ReadLine() ?? throw new ArgumentException();
+                Reader.DecodeFile(filename);
+                break;
+            default:
+                Console.WriteLine("Incorrect choice.");
+                break;
         }
-        noiseList.ForEach(Console.Write);
-
-        Console.Write("\nDecoded:\t");
-        CodeCorrection.Decode(noiseList).ForEach(Console.Write);
-
-         Reader.EncodeFile(
-            @"C:\Users\oskar\OneDrive\Desktop\Telekomunikacja\telecomunication-2022\CodeCorrection\tele.png");
-         Console.WriteLine();*/
-         Reader.DecodeFile(@"C:\Users\oskar\OneDrive\Desktop\Telekomunikacja\telecomunication-2022\CodeCorrection\encoded_text.txt");
+        
+        Console.ReadLine();
     }
 }
