@@ -5,7 +5,7 @@ public class Program {
     
     static public void Main(String[] args)
     {
-        var msg = new List<int>
+        /*var msg = new List<int>
         {
             0, 1, 0, 1, 1, 0, 1, 1
         };
@@ -37,6 +37,8 @@ public class Program {
         CodeCorrection.Decode(noiseList).ForEach(Console.Write);
 
          Reader.EncodeFile(
-            @"C:\Users\oskar\OneDrive\Desktop\Telekomunikacja\telecomunication-2022\CodeCorrection\text.txt");
+            @"C:\Users\oskar\OneDrive\Desktop\Telekomunikacja\telecomunication-2022\CodeCorrection\tele.png");
+         Console.WriteLine();*/
+         Reader.DecodeFile(@"C:\Users\oskar\OneDrive\Desktop\Telekomunikacja\telecomunication-2022\CodeCorrection\encoded_text.txt");
     }
 }
