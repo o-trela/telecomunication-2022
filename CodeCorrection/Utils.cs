@@ -21,8 +21,10 @@ public static class Utils
         }
     }
     
-    public static int ReadInt32(int min = Int32.MinValue, int max = Int32.MaxValue, int def = 1)
+    public static int ReadInt32(int min = Int32.MinValue, int max = Int32.MaxValue, int def = 0)
     {
+        if (!def.Between(min, max)) def = min;
+
         while (true)
         {
             string? input = Console.ReadLine();

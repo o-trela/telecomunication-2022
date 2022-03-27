@@ -33,12 +33,12 @@ public static class FileManager
 
         string encodedFilePath = Path.Combine(BaseDataDirPath, "encoded_" + fileName);
         File.WriteAllText(encodedFilePath, sb.ToString());
-        Console.WriteLine($"File encoded as {encodedFilePath}");
+        Console.WriteLine($"Encoded file written as {encodedFilePath}");
     }
 
     public static void DecodeFile(string fileName)
     {
-        var filePath = Path.Combine(BaseDataDirPath, fileName);
+        string filePath = Path.Combine(BaseDataDirPath, fileName);
         if (!File.Exists(filePath)) throw new FileNotFoundException($"File {filePath} not found!");
 
         var bits = new List<bool>();
@@ -47,7 +47,7 @@ public static class FileManager
             var chunk = new List<int>();
             foreach (var bit in line)
             {
-                var bitInt = (int)Char.GetNumericValue(bit);
+                int bitInt = (int)Char.GetNumericValue(bit);
                 chunk.Add(bitInt);
             }
             var decodedChunk = Code.Decode(chunk);
@@ -55,25 +55,25 @@ public static class FileManager
         }
 
         var bitArray = new BitArray(bits.ToArray());
-        byte[] bytes = new byte[bitArray.Length / 8];
+        var bytes = new byte[bitArray.Length / 8];
         bitArray.CopyTo(bytes, 0);
 
         string decodedFilePath = Path.Combine(BaseDataDirPath, "decoded_" + fileName);
         File.WriteAllBytes(decodedFilePath, bytes);
-        Console.WriteLine($"File decoded as {decodedFilePath}");
+        Console.WriteLine($"Decoded file written as {decodedFilePath}");
     }
 
     private static List<int> ReadFile(string filePath)
     {
         if (!File.Exists(filePath)) throw new FileNotFoundException($"File {filePath} not found!");
 
-        var bytes = File.ReadAllBytes(filePath);
-        var bitsList = new List<int>();
+        byte[] bytes = File.ReadAllBytes(filePath);
         var bits = new BitArray(bytes);
+        var bitsList = new List<int>();
 
         foreach (bool bit in bits)
         {
-            var converted = bit ? 1 : 0;
+            int converted = bit ? 1 : 0;
             bitsList.Add(converted);
         }
 

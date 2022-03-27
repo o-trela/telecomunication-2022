@@ -31,7 +31,7 @@ public static class Program {
         Console.WriteLine("2. Decode file");
         Console.Write("Choice: ");
 
-        var choice = Utils.ReadInt32(max: 2);
+        var choice = Utils.ReadInt32(min: 1, max: 2);
         switch (choice)
         {
             case 1:

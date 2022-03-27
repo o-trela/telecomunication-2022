@@ -54,7 +54,7 @@ public static class Code
         var numberSet = new List<int>();
         for (var i = 0; i < ParitySize; i++)
         {
-            var check = 0;
+            int check = 0;
             for (var j = 0; j < EncodedMsgSize; j++)
             {
                 check ^= H[i, j] & msg[j];
