@@ -1,4 +1,6 @@
-﻿namespace Zadanie_1;
+﻿using Zadanie_1.Dao;
+
+namespace Zadanie_1;
 
 /// <instruction>
 /// Coding algorythm
@@ -13,12 +15,14 @@
 
 public static class Program {
     
-    public static void Main(String[] args)
+    public static void Main(string[] args)
     {
-    string baseDataDirPath = 
-        Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "telekomunikacja_2022");
-        Util.CreateDirectory(baseDataDirPath);
+        string baseDataDirPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
+                "telekomunikacja_2022"
+                );
+
+        Utils.CreateDirectory(baseDataDirPath);
 
         string filename;
 
@@ -27,18 +31,18 @@ public static class Program {
         Console.WriteLine("2. Decode file");
         Console.Write("Choice: ");
 
-        var choice = Util.ReadInt32();
+        var choice = Utils.ReadInt32(max: 2);
         switch (choice)
         {
             case 1:
-                Console.Write("Enter file name to encode: ");
-                filename = Console.ReadLine() ?? throw new ArgumentException();
-                FileReader.EncodeFile(filename);
+                Console.Write("Enter name of a file to encode: ");
+                filename = Console.ReadLine() ?? throw new ArgumentException("Input can not be empty!", nameof(filename));
+                FileManager.EncodeFile(filename);
                 break;
             case 2:
-                Console.Write("Enter file name to decode: ");
-                filename = Console.ReadLine() ?? throw new ArgumentException();
-                FileReader.DecodeFile(filename);
+                Console.Write("Enter name of a file to decode: ");
+                filename = Console.ReadLine() ?? throw new ArgumentException("Input can not be empty!", nameof(filename));
+                FileManager.DecodeFile(filename);
                 break;
             default:
                 Console.WriteLine("Incorrect choice.");

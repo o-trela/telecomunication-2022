@@ -1,22 +1,16 @@
 ﻿using System.Globalization;
+using System.Text;
+using System.Collections;
 
 namespace Zadanie_1;
 
-public static class Util
-{
-    public static List<int> Clone(List<int> original)
-    {
-        var cloned = new List<int>();
-        original.ForEach(value => cloned.Add(value));
-        
-        return cloned;
-    }
-    
+public static class Utils
+{   
     public static void CreateDirectory(in string dirPath)
     {
         try
         {
-            if (dirPath != null && !Directory.Exists(dirPath))
+            if (!String.IsNullOrWhiteSpace(dirPath) && !Directory.Exists(dirPath))
             {
                 Directory.CreateDirectory(dirPath);
             }
@@ -27,11 +21,11 @@ public static class Util
         }
     }
     
-    public static int ReadInt32(int min = Int32.MinValue, int max = Int32.MaxValue, int def = 0)
+    public static int ReadInt32(int min = Int32.MinValue, int max = Int32.MaxValue, int def = 1)
     {
         while (true)
         {
-            string input = Console.ReadLine();
+            string? input = Console.ReadLine();
 
             if (input is not null)
             {
@@ -53,5 +47,13 @@ public static class Util
     public static bool Between(this int val, int min, int max)
     {
         return val >= min && val <= max;
+    }
+
+    public static string ToFormatted(this IEnumerable arr, string separator = " ")
+    {
+        var sb = new StringBuilder();
+        foreach (var item in arr) sb.Append(item).Append(separator);
+        sb.Remove(sb.Length - 1, 1);
+        return sb.ToString();
     }
 }

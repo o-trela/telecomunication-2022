@@ -5,61 +5,51 @@ public static class Code
     private const int MsgSize = 8;
     private const int ParitySize = 8;
     private const int EncodedMsgSize = MsgSize + ParitySize;
-
     private static readonly int[,] H =
     {
-        {1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
-        {1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0},
-        {1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0},
-        {0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0},
-        {1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0},
-        {1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0},
-        {0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0},
-        {1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1}
+        {1, 1, 1, 1, 0, 0, 0, 0,  1, 0, 0, 0, 0, 0, 0, 0},
+        {1, 1, 0, 0, 1, 1, 0, 0,  0, 1, 0, 0, 0, 0, 0, 0},
+        {1, 0, 1, 0, 1, 0, 1, 0,  0, 0, 1, 0, 0, 0, 0, 0},
+        {0, 1, 0, 1, 0, 1, 1, 0,  0, 0, 0, 1, 0, 0, 0, 0},
+        {1, 1, 1, 0, 1, 0, 0, 1,  0, 0, 0, 0, 1, 0, 0, 0},
+        {1, 0, 0, 1, 0, 1, 0, 1,  0, 0, 0, 0, 0, 1, 0, 0},
+        {0, 1, 1, 1, 1, 0, 1, 1,  0, 0, 0, 0, 0, 0, 1, 0},
+        {1, 1, 1, 0, 0, 1, 1, 1,  0, 0, 0, 0, 0, 0, 0, 1}
     };
 
     public static List<int> Encode(List<int> msg)
     {
-        var clonedMsg = Util.Clone(msg);
+        var encodedMsg = new List<int>(msg);
         for (var i = 0; i < ParitySize; i++)
         {
-            var parityBit = 0;
+            int parityBit = 0;
             for (var j = 0; j < MsgSize; j++)
             {
-                parityBit += H[i, j] * msg.ElementAt(j);
+                parityBit ^= H[i, j] & msg[j];
             }
-            parityBit %= 2;
-            clonedMsg.Add(parityBit);
+            encodedMsg.Add(parityBit);
         }
-        return clonedMsg;
+        return encodedMsg;
     }
 
     public static List<int> Decode(List<int> msg)
     {
-        if (CheckForErrors(msg))
-        {
-            msg.RemoveRange(MsgSize, msg.Count - MsgSize);
-            return msg;
-        }
+        List<int> correctedMsg;
 
-        var correctedMsg = CorrectMsg(msg);
+        if (IsCorrect(msg)) correctedMsg = new List<int>(msg);
+        else correctedMsg = CorrectMsg(msg);
+
         correctedMsg.RemoveRange(MsgSize, msg.Count - MsgSize);
         return correctedMsg;
     }
     
-    private static bool CheckForErrors(IReadOnlyCollection<int> msg)
+    private static bool IsCorrect(List<int> msg)
     {
         var numberSet = GetParityBits(msg);
-        var valid = true;
-        foreach (var number in numberSet.Where(number => number == 1))
-        {
-            valid = false;
-        }
-
-        return valid;
+        return !numberSet.Contains(1);
     }
 
-    private static IReadOnlyCollection<int> GetParityBits(IReadOnlyCollection<int> msg)
+    private static List<int> GetParityBits(List<int> msg)
     {
         var numberSet = new List<int>();
         for (var i = 0; i < ParitySize; i++)
@@ -67,55 +57,50 @@ public static class Code
             var check = 0;
             for (var j = 0; j < EncodedMsgSize; j++)
             {
-                check += H[i, j] * msg.ElementAt(j);
+                check ^= H[i, j] & msg[j];
             }
-            check %= 2;
             numberSet.Add(check);
         }
         return numberSet;
     }
 
-    private static bool IfSingleColumn(IReadOnlyCollection<int> numberSet)
+    private static bool IfSingleColumn(List<int> numberSet)
     {
         for (var i = 0; i < EncodedMsgSize; i++)
         {
-            var valid = true;
+            bool valid = true;
             for (var j = 0; j < ParitySize; j++)
             {
-                if (numberSet.ElementAt(j).Equals(H[j, i])) continue;
-                valid = false;
-                break;
+                if (numberSet[j] != H[j, i])
+                {
+                    valid = false;
+                    break;
+                }
             }
-            if (valid)
-            {
-                return true;
-            }
+            if (valid) return true;
         }
-
         return false;
     }
     
-    private static int ErrorBit(IReadOnlyCollection<int> numberSet)
+    private static int ErrorBit(List<int> numberSet)
     {
-        int i;
-        for (i = 0; i < EncodedMsgSize; i++)
+        for (var i = 0; i < EncodedMsgSize; i++)
         {
-            var valid = true;
+            bool valid = true;
             for (var j = 0; j < ParitySize; j++)
             {
-                if (numberSet.ElementAt(j).Equals(H[j, i])) continue;
-                valid = false;
-                break;
+                if (numberSet[j] != H[j, i])
+                {
+                    valid = false;
+                    break;
+                }
             }
-            if (valid)
-            {
-                return i;
-            }
+            if (valid) return i;
         }
-        return 0; // not suppose to happen
+        return -1;
     }
 
-    private static Tuple<int, int> ErrorBits(IReadOnlyCollection<int> numberSet)
+    private static (int bit1, int bit2) ErrorBits(List<int> numberSet)
     {
         for (var i = 0; i < EncodedMsgSize; i++)
         {
@@ -123,45 +108,33 @@ public static class Code
             {
                 for (var k = 0; k < ParitySize; k++)
                 {
-                    if ((H[k, i] + H[k, j]) % 2 
-                        != numberSet.ElementAt(k)) break;
-                    if (k >= ParitySize - 1)
-                    {
-                        return Tuple.Create(i, j);
-                    }
+                    if ((H[k, i] ^ H[k, j]) != numberSet[k]) break;
+
+                    if (k >= ParitySize - 1) return (i, j);
                 }
             }
         }
-
-        return Tuple.Create(0, 0); // not suppose to happen
+        return (-1, -1);
     }
 
     private static List<int> CorrectMsg(List<int> msg)
     {
-        List<int> position = new List<int>();
-        if (IfSingleColumn(GetParityBits(msg)))
+        var positions = new List<int>();
+        var parityBits = GetParityBits(msg);
+
+        if (IfSingleColumn(parityBits))
         {
-            position.Add(ErrorBit(GetParityBits(msg)));
+            positions.Add(ErrorBit(parityBits));
         }
         else
         {
-            position.Add(ErrorBits(GetParityBits(msg)).Item1);
-            position.Add(ErrorBits(GetParityBits(msg)).Item2);
+            (int bit1, int bit2) = ErrorBits(parityBits);
+            positions.Add(bit1);
+            positions.Add(bit2);
         }
         
-        List<int> correctedMsg = new List<int>();
-        var index = 0;
-        foreach (var bit in msg)
-        {
-            if (position.Contains(index))
-            {
-                correctedMsg.Add((bit + 1) % 2);
-                index++;
-                continue;
-            }
-            correctedMsg.Add(bit);
-            index++;
-        }
+        var correctedMsg = new List<int>(msg);
+        foreach (var i in positions) correctedMsg[i] ^= 1;
 
         return correctedMsg;
     }
