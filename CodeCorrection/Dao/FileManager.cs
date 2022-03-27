@@ -9,23 +9,6 @@ public static class FileManager
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
             "telekomunikacja_2022"
         );
-    
-    private static List<int> ReadFile(string filePath)
-    {
-        if (!File.Exists(filePath)) throw new FileNotFoundException($"File {filePath} not found!");
-
-        var bitsList = new List<int>;
-        var bytes = File.ReadAllBytes(filePath);
-        var bits = new BitArray(bytes);
-        
-        foreach (bool bit in bits)
-        {
-            var converted = bit ? 1 : 0;
-            bitsList.Add(converted);
-        }
-
-        return bitsList;
-    }
 
     public static void EncodeFile(string fileName)
     {
@@ -37,29 +20,16 @@ public static class FileManager
         
         for (var i = 0; i < bitsList.Count; i++)
         {
-            // TODO: needs to be cleared
-            if (i == bitsList.Count - 1)
-            {
-                buffer.Add(bitsList[i]);
-            }
-            
-            if (i % 8 == 0 && i != 0 || i == bitsList.Count - 1)
+            buffer.Add(bitsList[i]);
+
+            if (buffer.Count % 8 == 0)
             {
                 var encodedBuffer = Code.Encode(buffer);
-                encodedBuffer.ForEach(value => sb.Append(value));
-                sb.AppendLine();
+                foreach (int bit in encodedBuffer) sb.Append(bit);
+                if (i != bitsList.Count - 1) sb.AppendLine();
                 buffer.Clear();
-                encodedBuffer.Clear();
-            }
-
-            if (i != bitsList.Count - 1)
-            {
-                buffer.Add(bitsList[i]);
             }
         }
-
-        // TODO: it can be done better
-        sb.Remove(sb.Length - 2, 2);
 
         string encodedFilePath = Path.Combine(BaseDataDirPath, "encoded_" + fileName);
         File.WriteAllText(encodedFilePath, sb.ToString());
@@ -91,5 +61,22 @@ public static class FileManager
         string decodedFilePath = Path.Combine(BaseDataDirPath, "decoded_" + fileName);
         File.WriteAllBytes(decodedFilePath, bytes);
         Console.WriteLine($"File decoded as {decodedFilePath}");
+    }
+
+    private static List<int> ReadFile(string filePath)
+    {
+        if (!File.Exists(filePath)) throw new FileNotFoundException($"File {filePath} not found!");
+
+        var bytes = File.ReadAllBytes(filePath);
+        var bitsList = new List<int>();
+        var bits = new BitArray(bytes);
+
+        foreach (bool bit in bits)
+        {
+            var converted = bit ? 1 : 0;
+            bitsList.Add(converted);
+        }
+
+        return bitsList;
     }
 }

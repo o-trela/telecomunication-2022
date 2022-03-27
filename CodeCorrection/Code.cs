@@ -14,7 +14,7 @@ public static class Code
         {1, 1, 1, 0, 1, 0, 0, 1,  0, 0, 0, 0, 1, 0, 0, 0},
         {1, 0, 0, 1, 0, 1, 0, 1,  0, 0, 0, 0, 0, 1, 0, 0},
         {0, 1, 1, 1, 1, 0, 1, 1,  0, 0, 0, 0, 0, 0, 1, 0},
-        {1, 1, 1, 0, 0, 1, 1, 1,  0, 0, 0, 0, 0, 0, 0, 1}
+        {1, 1, 1, 0, 0, 1, 1, 1,  0, 0, 0, 0, 0, 0, 0, 1},
     };
 
     public static List<int> Encode(List<int> msg)
@@ -124,7 +124,8 @@ public static class Code
 
         if (IfSingleColumn(parityBits))
         {
-            positions.Add(ErrorBit(parityBits));
+            int bit = ErrorBit(parityBits);
+            positions.Add(bit);
         }
         else
         {
