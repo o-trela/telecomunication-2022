@@ -37,26 +37,12 @@ public static class Program {
             case 1:
                 Console.Write("Enter name of a file to encode: ");
                 filename = Console.ReadLine() ?? throw new ArgumentException("Input can not be empty!", nameof(filename));
-                try 
-                {
-                    FileManager.EncodeFile(filename);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);   
-                }
+                FileManager.EncodeFile(filename);
                 break;
             case 2:
                 Console.Write("Enter name of a file to decode: ");
                 filename = Console.ReadLine() ?? throw new ArgumentException("Input can not be empty!", nameof(filename));
-                try
-                {
-                    FileManager.DecodeFile(filename);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);   
-                }
+                FileManager.DecodeFile(filename);
                 break;
             default:
                 Console.WriteLine("Incorrect choice.");
