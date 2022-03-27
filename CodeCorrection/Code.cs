@@ -133,6 +133,11 @@ public static class Code
             positions.Add(bit1);
             positions.Add(bit2);
         }
+
+        if (positions.Contains(-1))
+        {
+            throw new Exception("Decoding failed!");
+        }
         
         var correctedMsg = new List<int>(msg);
         foreach (var i in positions) correctedMsg[i] ^= 1;
