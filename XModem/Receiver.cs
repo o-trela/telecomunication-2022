@@ -7,15 +7,13 @@ namespace XModem;
 public class Receiver : PortManager
 {
     private byte[]? _data;
-    public Receiver(int portNumber, VerificationMethod method, Action<object> printer) : base(portNumber, method, printer) {}
+    public Receiver(int portNumber, VerificationMethod method, Action<object> printer) : base(portNumber, method, printer)
+    { }
 
     public void Process()
     {
+        if (!StartTransmission()) return;           
         int counter = 1;
-        if (!StartTransmission())
-        {
-             return;           
-        }
         
 
     }
@@ -35,14 +33,11 @@ public class Receiver : PortManager
         while (startTime.Elapsed.Seconds < 60)
         {
             WriteSignal(signal);
-            responseTime.Start();
+            responseTime.Restart();
             while (responseTime.Elapsed.Seconds < timeout)
             {
                 _data = Read();
-                if (_data is not null)
-                {
-                    return true;
-                }
+                if (_data is not null) return true;
                 Thread.Sleep(10);
             }
         }
@@ -50,15 +45,14 @@ public class Receiver : PortManager
         return false;
     }
 
-    private void SplitData(out char signal, out int packetNumber, out int invPacketNumber, out byte[] contentData,
-        out byte[] verification)
+    private void SplitData(out char signal, out int packetNumber, out int invPacketNumber, out byte[] contentData, out byte[] verification)
     {
         if (_data is null) throw new NullReferenceException("Data cannot be null!");
         
         signal = (char) _data[0];
         packetNumber = _data[1];
         invPacketNumber = _data[2];
-        contentData = _data[3..132];
-        verification = _data[132..];
+        contentData = _data[3..131];
+        verification = _data[131..];
     }
 }

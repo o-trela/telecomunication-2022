@@ -21,7 +21,7 @@ public class PortManager
             DataBits = 8,
             StopBits = StopBits.One,
         };
-
+        
         _method = method;
         _printer = printer;
     }
