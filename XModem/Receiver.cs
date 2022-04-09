@@ -7,15 +7,79 @@ namespace XModem;
 public class Receiver : PortManager
 {
     private byte[]? _data;
-    public Receiver(int portNumber, VerificationMethod method, Action<object> printer) : base(portNumber, method, printer)
-    { }
+    private List<byte> received;
 
-    public void Process()
+    public Receiver(int portNumber, VerificationMethod method, Action<object> printer) 
+        : base(portNumber, method, printer)
     {
-        if (!StartTransmission()) return;           
-        int counter = 1;
-        
+        received = new();
+    }
 
+    public override void Process()
+    {
+        if (!StartTransmission()) return;
+
+        int counter = 1;
+        while (true)
+        {
+            _data = null;
+            while (_data is null)
+            {
+                _data = Read();
+                Thread.Sleep(10);
+            }
+
+            if (IsLastPacket())
+            {
+                Acknowledged();
+                break;
+            }
+
+            SplitData(out char signal,
+                      out int packetNumber,
+                      out int invPacketNumber,
+                      out byte[] contentData,
+                      out byte[] verification);
+
+            if (signal != Global.SOH
+                || packetNumber == counter
+                || packetNumber + invPacketNumber != 255
+                || !VerificationCode(contentData).SequenceEqual(verification))
+            {
+                NotAcknowledged();
+                continue;
+            }
+
+            AddReceived(contentData);
+            Acknowledged();
+            counter++;
+        }
+
+        _printer("Transmition ended succesfully");
+    }
+
+    private bool IsLastPacket()
+    {
+        if (_data is null) throw new NullReferenceException("Data cannot be null!");
+        return _data[0] == Global.EOT;
+    }
+
+    private void NotAcknowledged()
+    {
+        WriteSignal(Global.NAK);
+        _printer("Packet not acknowledged!\n");
+    }
+
+    private void Acknowledged()
+    {
+        WriteSignal(Global.ACK);
+        _printer("Packet acknowledged!\n");
+    }
+
+    private void AddReceived(byte[] contentData)
+    {
+        received.AddRange(contentData);
+        _printer("Data received.\n");
     }
 
     public bool StartTransmission()
@@ -36,8 +100,7 @@ public class Receiver : PortManager
             responseTime.Restart();
             while (responseTime.Elapsed.Seconds < timeout)
             {
-                _data = Read();
-                if (_data is not null) return true;
+                if (_serialPort.BytesToRead > 0) return true;
                 Thread.Sleep(10);
             }
         }
