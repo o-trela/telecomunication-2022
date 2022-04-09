@@ -46,7 +46,7 @@ public class PortManager
     public string Read()
     {
         string content = _serialPort.ReadLine();
-        _printer(content + '\n');
+        _printer(content);
         return content;
     }
 

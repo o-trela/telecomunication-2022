@@ -5,9 +5,9 @@
 // Najpierw zainstaluj sobie bibliotekę System.IO.Ports (nie wiem jak, po prostu to zrób)
 // Na razie korzystam z Virtual Null Modem i jest git (https://www.virtual-null-modem.com/)
 // Tam trza stworzyć nowy modem, wybrać COM2 i COM3 (znaczy można inne, ale po co) i handshake chyba nie ma znaczenia na razie.
-// Na razie symulowanie zakłóceń coś mi nie działa, ale to już w kilku programach, plus nie tylko w moim xmodemie, w tych na dysku terż coś sie klepie jak się daje zakłócenie.
+// Na razie symulowanie zakłóceń coś mi nie działa, ale to już w kilku programach, plus nie tylko w moim xmodemie, w tych na dysku też coś sie klepie jak się daje zakłócenie.
 // Jak już sobie stworzysz te porty i Zastosujesz to se zbuduj ten programik i odpal 2 instancje po prostu z pliku exe
-// W nadajniku wybierasz powiedzmy COM2, w odbiorniku COM3, i jak w nadajniku coś napiszesz to to się wyświetli w odbiorniku (a zakończyć można wpisując 'exit')
+// W nadajniku wybierasz powiedzmy COM2, w odbiorniku COM3, i jak w nadajniku coś napiszesz to to się wyświetli w odbiorniku (a zakończyć można wpisując 'q')
 
 namespace XModem;
 using Color = ConsoleColor;
@@ -46,16 +46,17 @@ public class Program
             case 1:
                 while (cont)
                 {
-                    string? message = Console.ReadLine() ?? "null";
+                    var keyInfo = Console.ReadKey();
+                    string message = Char.ToString(keyInfo.KeyChar);
                     portManager.Write(message);
-                    cont = !message.Contains("exit", StringComparison.OrdinalIgnoreCase);
+                    cont = !message.Equals("q", StringComparison.OrdinalIgnoreCase);
                 }
                 break;
             case 2:
                 while (cont)
                 {
                     string message = portManager.Read();
-                    cont = !message.Contains("exit", StringComparison.OrdinalIgnoreCase);
+                    cont = !message.Equals("q", StringComparison.OrdinalIgnoreCase);
                 }
                 break;
         }
