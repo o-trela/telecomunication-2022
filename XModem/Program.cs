@@ -1,8 +1,10 @@
 ﻿using System;
 
-// Bardzo basic program do testowania tych symulatorów portó szeregowych.
+// Bardzo basic program do testowania tych symulatorów portów szeregowych.
+//
+// Najpierw zainstaluj sobie bibliotekę System.IO.Ports (nie wiem jak, po prostu to zrób)
 // Na razie korzystam z Virtual Null Modem i jest git (https://www.virtual-null-modem.com/)
-// Tam trza stworzyć nowy moded, wybrać COM2 i COM3 (znaczy można inne, ale po co) i zostawić pełny handshake.
+// Tam trza stworzyć nowy modem, wybrać COM2 i COM3 (znaczy można inne, ale po co) i handshake chyba nie ma znaczenia na razie.
 // Na razie symulowanie zakłóceń coś mi nie działa, ale to już w kilku programach, plus nie tylko w moim xmodemie, w tych na dysku terż coś sie klepie jak się daje zakłócenie.
 // Jak już sobie stworzysz te porty i Zastosujesz to se zbuduj ten programik i odpal 2 instancje po prostu z pliku exe
 // W nadajniku wybierasz powiedzmy COM2, w odbiorniku COM3, i jak w nadajniku coś napiszesz to to się wyświetli w odbiorniku (a zakończyć można wpisując 'exit')
