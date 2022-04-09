@@ -16,6 +16,7 @@ public class Program
 {
     public static void Main()
     {
+        /*
         int mode; // 1 - Nadajnik, 2 - Odbiornik
         int port;
         //string filePath;
@@ -60,6 +61,10 @@ public class Program
                 }
                 break;
         }
+        */
+
+        Receiver receiver = new Receiver(1, PortManager.VerificationMethod.CheckSum, o => Print(o));
+        receiver.StartTransmission();
 
 
         //Console.ReadLine();

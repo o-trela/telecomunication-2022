@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Text;
 using System.IO.Ports;
 
@@ -6,10 +7,11 @@ namespace XModem;
 
 public class PortManager
 {
-    private SerialPort _serialPort;
-    private Action<object> _printer;
+    protected SerialPort _serialPort;
+    protected Action<object> _printer;
+    protected VerificationMethod _method;
 
-    public PortManager(int portNumber, Action<object> printer)
+    public PortManager(int portNumber, VerificationMethod method, Action<object> printer)
     {
         _serialPort = new SerialPort()
         {
@@ -20,6 +22,7 @@ public class PortManager
             StopBits = StopBits.One,
         };
 
+        _method = method;
         _printer = printer;
     }
 
@@ -37,21 +40,27 @@ public class PortManager
         }
     }
 
-    public void Write(string? message)
-    {
-        if (String.IsNullOrWhiteSpace(message)) return;
-        _serialPort.WriteLine(message);
-    }
+    public void WriteSignal(char signal) => _serialPort.Write(new[] { (byte) signal }, 0, 1);
+    public char ReadSignal() => (char)_serialPort.ReadChar();
 
-    public string Read()
+    public void Write(byte[] data) => _serialPort.Write(data, 0, data.Length);
+    public byte[]? Read()
     {
-        string content = _serialPort.ReadLine();
-        _printer(content);
-        return content;
+        int charactersRead;
+        var length = 131 + (int) _method;
+        byte[] data = new byte[length];
+        charactersRead = _serialPort.Read(data, 0, length);
+        return charactersRead > 0 ? data : null;
     }
 
     public static string[] GetPorts()
     {
         return SerialPort.GetPortNames();
+    }
+
+    public enum VerificationMethod
+    {
+        CheckSum = 1,
+        CRC = 2,
     }
 }
