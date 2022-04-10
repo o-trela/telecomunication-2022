@@ -1,6 +1,6 @@
 ﻿using System.IO.Ports;
-using XModem.Logging;
 using XModem.Helpers;
+using XModem.Logging;
 
 namespace XModem.Transmission;
 

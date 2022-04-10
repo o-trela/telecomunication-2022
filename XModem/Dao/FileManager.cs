@@ -8,7 +8,7 @@ public class FileManager
         "telekomunikacja_2022"
     );
 
-    private string _fullFilePath;
+    private readonly string _fullFilePath;
 
     public FileManager(string filename)
     {

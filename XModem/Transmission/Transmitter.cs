@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
-using XModem.Logging;
 using XModem.Helpers;
+using XModem.Logging;
 
 namespace XModem.Transmission;
 

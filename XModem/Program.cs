@@ -1,7 +1,7 @@
-﻿using XModem.Logging;
-using XModem.Transmission;
+﻿using XModem.Dao;
 using XModem.Helpers;
-using XModem.Dao;
+using XModem.Logging;
+using XModem.Transmission;
 
 namespace XModem;
 using Verification = PortManager.VerificationMethod;
