@@ -1,6 +1,8 @@
 ﻿using System.IO.Ports;
+using XModem.Logging;
+using XModem.Helpers;
 
-namespace XModem;
+namespace XModem.Transmission;
 
 public abstract class PortManager
 {
@@ -61,7 +63,7 @@ public abstract class PortManager
         return _method switch
         {
             VerificationMethod.CheckSum => CheckSum(data),
-            VerificationMethod.CRC => CRC(data),
+            VerificationMethod.Crc => CRC(data),
             _ => throw new ArgumentException("Ale heca nie ma mnie"),
         };
     }
@@ -74,7 +76,7 @@ public abstract class PortManager
         int offset = Global.HeaderSize;
 
         byte sum = 0;
-        for (int i = offset; i < Global.BlockSize + offset; i++)
+        for (var i = offset; i < Global.BlockSize + offset; i++)
         {
             byte b = data[i];
             sum += b;
@@ -90,10 +92,10 @@ public abstract class PortManager
         int offset = Global.HeaderSize;
 
         int crc = 0;
-        for (int i = offset; i < Global.BlockSize + offset; i++)
+        for (var i = offset; i < Global.BlockSize + offset; i++)
         {
             crc ^= data[i] << Bits;
-            for (int j = 0; j < Bits; j++)
+            for (var j = 0; j < Bits; j++)
             {
                 crc <<= 1;
                 if ((crc & 0x8000) != 0) crc ^= Polynomial;
@@ -110,6 +112,6 @@ public abstract class PortManager
     public enum VerificationMethod
     {
         CheckSum = 1,
-        CRC = 2,
+        Crc = 2,
     }
 }

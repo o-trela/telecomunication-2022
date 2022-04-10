@@ -1,6 +1,8 @@
 using System.Diagnostics;
+using XModem.Logging;
+using XModem.Helpers;
 
-namespace XModem;
+namespace XModem.Transmission;
 
 public class Receiver : PortManager
 {
@@ -69,7 +71,7 @@ public class Receiver : PortManager
         var (signal, timeout, printableSignal) = _method switch
         {
             VerificationMethod.CheckSum => (Global.NAK, 10, "NAK"),
-            VerificationMethod.CRC => (Global.C, 3, "C"),
+            VerificationMethod.Crc => (Global.C, 3, "C"),
             _ => throw new ArgumentOutOfRangeException(),
         };
 

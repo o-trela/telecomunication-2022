@@ -1,12 +1,13 @@
-﻿namespace XModem;
+﻿using XModem.Logging;
+using XModem.Transmission;
+using XModem.Helpers;
+using XModem.Dao;
+
+namespace XModem;
 using Verification = PortManager.VerificationMethod;
 
 public class Program
 {
-    // Przykład wywołania: ./XModem.exe 1 COM3 text.txt
-    //                       (nadajnik) (nazwa portu) (nazwa pliku))
-    // Przykład wywołania: ./XModem.exe 2 COM4 text.out.txt
-    //                       (odbrionik) (nazwa portu) (nazwa pliku))
     public static void Main(string[] args)
     {
         FileManager.EnsureDirectoryIsValid();

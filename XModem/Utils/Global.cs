@@ -1,4 +1,4 @@
-﻿namespace XModem;
+﻿namespace XModem.Helpers;
 
 public static class Global
 {

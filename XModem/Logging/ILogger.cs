@@ -1,4 +1,4 @@
-﻿namespace XModem;
+﻿namespace XModem.Logging;
 
 public interface ILogger
 {

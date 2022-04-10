@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Text;
 
-namespace XModem;
+namespace XModem.Helpers;
 
 public static class Utils
 {

@@ -1,4 +1,4 @@
-﻿namespace XModem;
+﻿namespace XModem.Dao;
 
 public class FileManager
 {
