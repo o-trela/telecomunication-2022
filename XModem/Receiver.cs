@@ -51,7 +51,6 @@ public class Receiver : PortManager
             {
                 _printer($"Noise detected.\n");
                 NotAcknowledged();
-                _printer($"NAK signal sent.\n");
                 continue;
             }
 
@@ -116,13 +115,13 @@ public class Receiver : PortManager
     private void NotAcknowledged()
     {
         WriteSignal(Global.NAK);
-        _printer("Packet not acknowledged!\n");
+        _printer("Packet not acknowledged! (NAK)\n");
     }
 
     private void Acknowledged()
     {
         WriteSignal(Global.ACK);
-        _printer("Packet acknowledged!\n");
+        _printer("Packet acknowledged! (ACK)\n");
     }
 
     private void AddReceived(byte[] contentData)
