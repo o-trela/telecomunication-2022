@@ -63,11 +63,10 @@ public class Transmitter : PortManager
 
         for (var j = 0; j < Global.BlockSize; j++)
         {
-            byte b = _data[offset + j];
-            if (_data.Length - 1 <= offset + j)
-            {
-                b = 0;
-            }
+            byte b;
+            if (_data.Length - 1 <= offset + j) b = 0;
+            else b = _data[offset + j];
+
             packet[3 + j] = b;
         }
 
