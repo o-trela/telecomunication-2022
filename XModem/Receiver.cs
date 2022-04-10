@@ -33,6 +33,7 @@ public class Receiver : PortManager
 
             if (IsLastPacket())
             {
+                _printer($"EOT signal received.\n");
                 Acknowledged();
                 break;
             }
@@ -48,25 +49,28 @@ public class Receiver : PortManager
                 || packetNumber + invPacketNumber != 255
                 || !VerificationCode(_data).SequenceEqual(verification))
             {
+                _printer($"Noise detected.\n");
                 NotAcknowledged();
+                _printer($"NAK signal sent.\n");
                 continue;
             }
 
             AddReceived(contentData);
             Acknowledged();
             counter++;
+            counter %= 255;
         }
 
         _writer(GetReceived());
-        _printer("Transmission ended successfully");
+        _printer("Transmission ended successfully.\n");
     }
 
-    public bool StartTransmission()
+    private bool StartTransmission()
     {
-        var (signal, timeout) = _method switch
+        var (signal, timeout, printableSignal) = _method switch
         {
-            VerificationMethod.CheckSum => (Global.NAK, 10),
-            VerificationMethod.CRC => (Global.C, 3),
+            VerificationMethod.CheckSum => (Global.NAK, 10, "NAK"),
+            VerificationMethod.CRC => (Global.C, 3, "C"),
             _ => throw new ArgumentOutOfRangeException(),
         };
 
@@ -75,12 +79,18 @@ public class Receiver : PortManager
         while (startTime.Elapsed.Seconds < 60)
         {
             WriteSignal(signal);
+            _printer($"{printableSignal} sent.\n");
             responseTime.Restart();
             while (responseTime.Elapsed.Seconds < timeout)
             {
-                if (_serialPort.BytesToRead > 0) return true;
+                if (_serialPort.BytesToRead > 0)
+                {
+                    _printer("First packet discovered. Starting transmission.\n");
+                    return true;
+                }
                 Global.Wait();
             }
+            _printer("Timeout.\n");
         }
 
         return false;
@@ -121,7 +131,7 @@ public class Receiver : PortManager
         _printer("Data received.\n");
     }
 
-    public byte[] GetReceived()
+    private byte[] GetReceived()
     {
         return _received.ToArray();
     }
