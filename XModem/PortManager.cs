@@ -74,7 +74,8 @@ public abstract class PortManager
         if (data is null) throw new ArgumentNullException(nameof(data));
         if (data.Length < Global.BlockSize + 1) throw new ArgumentException($"Data Length is too short ({data.Length})");
 
-        const int offset = 3;
+        int offset = Global.HeaderSize;
+
         byte sum = 0;
         for (int i = offset; i < Global.BlockSize + offset; i++)
         {
@@ -84,9 +85,25 @@ public abstract class PortManager
         return new[] { sum };
     }
 
-    protected static byte[] CRC(byte[] data)
+    public static byte[] CRC(byte[] data)
     {
-        throw new NotImplementedException();
+        const int Polynomial = 0x1021;
+        const int Bits = 8;
+
+        int offset = Global.HeaderSize;
+        
+        int crc = 0;
+        for (int i = offset; i < Global.BlockSize + offset; i++)
+        {
+            byte b = data[i];
+            crc ^= b << Bits;
+            for (int j = 0; j < Bits; j++)
+            {
+                crc <<= 1;
+                if ((crc & 0x8000) != 0) crc ^= Polynomial;
+            }
+        }
+        return new[] { (byte)crc, (byte)(crc >> 8) };
     }
 
     public static string[] GetPorts()

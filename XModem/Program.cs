@@ -2,6 +2,7 @@
 
 namespace XModem;
 using Color = ConsoleColor;
+using Verification = PortManager.VerificationMethod;
 
 public class Program
 {
@@ -16,7 +17,11 @@ public class Program
 
         if (args.Length == 3)
         {
-            Run(Int32.Parse(args[0]), args[1], args[2]);
+            Run(Int32.Parse(args[0]), args[1], args[2], Verification.CheckSum);
+        }
+        else if (args.Length == 4)
+        {
+            Run(Int32.Parse(args[0]), args[1], args[2], (Verification)Int32.Parse(args[3]));
         }
         else
         {
@@ -25,6 +30,7 @@ public class Program
                 "2. Odbiornik");
             Print("Wybor: ");
             int mode = Utils.ReadInt32(1, 2);
+
             string[] ports = PortManager.GetPorts();
             Println("Wybierz numer portu szeregowego:");
             for (var i = 0; i < ports.Length; i++) Println($"{i + 1}. {ports[i]}");
@@ -34,20 +40,27 @@ public class Program
             Println("Podaj ścieżkę do pliku docelowego:");
             string filePath = Console.ReadLine() ?? "null";
 
-            Run(mode, ports[port - 1], filePath);
+            Println("Wybierz metodę werydikacji poprawności zawartości:\n" +
+                "1. Checksum\n" +
+                "2. CRC");
+            Print("Wybor: ");
+            Verification method = (Verification)Utils.ReadInt32(1, 2);
+
+
+            Run(mode, ports[port - 1], filePath, method);
         }
 
         Console.ReadLine();
     }
 
-    private static void Run(int mode, string portName, string filePath)
+    private static void Run(int mode, string portName, string fileName, Verification method)
     {
-        var fileManager = new FileManager(filePath);
+        var fileManager = new FileManager(fileName);
 
         PortManager manager = mode switch
         {
-            1 => new Transmitter(portName, fileManager.Read(), PortManager.VerificationMethod.CheckSum, o => Print(o)),
-            2 => new Receiver(portName, fileManager.Write, PortManager.VerificationMethod.CheckSum, o => Print(o)),
+            1 => new Transmitter(portName, fileManager.Read(), method, o => Print(o)),
+            2 => new Receiver(portName, fileManager.Write, method, o => Print(o)),
             _ => throw new ArgumentException($"Mode {mode} is not correct!"),
         };
         manager.Open();

@@ -17,12 +17,12 @@ public class Transmitter : PortManager
         if (!StartTransmission()) return;
 
         int dataLength = _data.Length;
-        int packets = dataLength <= 0 ? 0 : (dataLength - 1) / Global.BlockSize + 1; // 127 -> (127 - 1) / 128 + 1 = 1;
-                                                                                     // 128 -> (128 - 1) / 128 + 1 = 1;
-        for (var i = 0; i < packets; i++)                                            // 129 -> (129 - 1) / 128 + 1 = 2;
+        int packets = dataLength <= 0 ? 0 : (dataLength - 1) / Global.BlockSize + 1;
+        ;
+        for (var i = 0; i < packets; i++)
         {
             byte[] packet = PreparePacket(i);
-            Write(packet/*.SimulateNoise(0.5)*/);
+            Write(packet.SimulateNoise(0.5));
             _printer($"Packet #{i + 1} sent.\n");
             while (true)
             {
@@ -36,7 +36,7 @@ public class Transmitter : PortManager
                 if (signal == Global.NAK)
                 {
                     _printer($"NAK signal received. Resending packet #{i + 1}.\n");
-                    Write(packet/*.SimulateNoise(0.3)*/);
+                    Write(packet.SimulateNoise(0.3));
                 }
                 Global.Wait();
             }
