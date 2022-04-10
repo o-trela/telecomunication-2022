@@ -7,15 +7,15 @@ namespace XModem;
 
 public abstract class PortManager
 {
-    protected SerialPort _serialPort;
-    protected Action<object> _printer;
-    protected VerificationMethod _method;
+    protected readonly SerialPort _serialPort;
+    protected readonly Action<object> _printer;
+    protected readonly VerificationMethod _method;
 
-    public PortManager(int portNumber, VerificationMethod method, Action<object> printer)
+    protected PortManager(string portName, VerificationMethod method, Action<object> printer)
     {
         _serialPort = new SerialPort()
         {
-            PortName = $"COM{portNumber}",
+            PortName = portName,
             BaudRate = 115200,
             Parity = Parity.None,
             DataBits = 8,
@@ -43,9 +43,11 @@ public abstract class PortManager
     }
 
     public void WriteSignal(char signal) => _serialPort.Write(new[] { (byte) signal }, 0, 1);
+
     public char ReadSignal() => (char)_serialPort.ReadChar();
 
     public void Write(byte[] data) => _serialPort.Write(data, 0, data.Length);
+
     public byte[]? Read()
     {
         int length = _serialPort.BytesToRead;
@@ -69,9 +71,14 @@ public abstract class PortManager
 
     protected static byte[] CheckSum(byte[] data)
     {
+        if (data is null) throw new ArgumentNullException(nameof(data));
+        if (data.Length < Global.BlockSize + 1) throw new ArgumentException($"Data Length is too short ({data.Length})");
+
+        const int offset = 3;
         byte sum = 0;
-        foreach (byte b in data)
+        for (int i = offset; i < Global.BlockSize + offset; i++)
         {
+            byte b = data[i];
             sum += b;
         }
         return new[] { sum };

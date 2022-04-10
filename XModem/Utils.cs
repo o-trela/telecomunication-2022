@@ -6,21 +6,6 @@ namespace XModem;
 
 public static class Utils
 {
-    public static void CreateDirectory(in string dirPath)
-    {
-        try
-        {
-            if (!String.IsNullOrWhiteSpace(dirPath) && !Directory.Exists(dirPath))
-            {
-                Directory.CreateDirectory(dirPath);
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
-    }
-
     public static int ReadInt32(int min = Int32.MinValue, int max = Int32.MaxValue, int def = 0)
     {
         if (!def.Between(min, max)) def = min;
@@ -57,5 +42,16 @@ public static class Utils
         foreach (var item in arr) sb.Append(item).Append(separator);
         sb.Remove(sb.Length - 1, 1);
         return sb.ToString();
+    }
+
+    public static T?[] SimulateNoise<T>(this T?[] data, double probability)
+    {
+        var rng = Random.Shared;
+        if (rng.NextDouble() < probability)
+        {
+            int index = rng.Next(data.Length);
+            data[index] = default;
+        }
+        return data;
     }
 }

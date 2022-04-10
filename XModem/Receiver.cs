@@ -7,12 +7,14 @@ namespace XModem;
 public class Receiver : PortManager
 {
     private byte[]? _data;
-    private List<byte> received;
+    private readonly Action<byte[]> _writer;
+    private readonly List<byte> _received;
 
-    public Receiver(int portNumber, VerificationMethod method, Action<object> printer) 
-        : base(portNumber, method, printer)
+    public Receiver(string portName, Action<byte[]> writer, VerificationMethod method, Action<object> printer) 
+        : base(portName, method, printer)
     {
-        received = new();
+        _received = new();
+        _writer = writer;
     }
 
     public override void Process()
@@ -25,8 +27,8 @@ public class Receiver : PortManager
             _data = null;
             while (_data is null)
             {
+                Global.Wait();
                 _data = Read();
-                Thread.Sleep(10);
             }
 
             if (IsLastPacket())
@@ -42,10 +44,14 @@ public class Receiver : PortManager
                       out byte[] verification);
 
             if (signal != Global.SOH
-                || packetNumber == counter
+                || packetNumber != counter
                 || packetNumber + invPacketNumber != 255
-                || !VerificationCode(contentData).SequenceEqual(verification))
+                || !VerificationCode(_data).SequenceEqual(verification))
             {
+                Console.WriteLine(signal != Global.SOH);
+                Console.WriteLine(packetNumber != counter);
+                Console.WriteLine(packetNumber + invPacketNumber != 255);
+                Console.WriteLine(!VerificationCode(_data).SequenceEqual(verification));
                 NotAcknowledged();
                 continue;
             }
@@ -55,7 +61,44 @@ public class Receiver : PortManager
             counter++;
         }
 
+        _writer(GetReceived());
         _printer("Transmission ended successfully");
+    }
+
+    public bool StartTransmission()
+    {
+        var (signal, timeout) = _method switch
+        {
+            VerificationMethod.CheckSum => (Global.NAK, 10),
+            VerificationMethod.CRC => (Global.C, 3),
+            _ => throw new ArgumentOutOfRangeException(),
+        };
+
+        var startTime = Stopwatch.StartNew();
+        var responseTime = Stopwatch.StartNew();
+        while (startTime.Elapsed.Seconds < 60)
+        {
+            WriteSignal(signal);
+            responseTime.Restart();
+            while (responseTime.Elapsed.Seconds < timeout)
+            {
+                if (_serialPort.BytesToRead > 0) return true;
+                Global.Wait();
+            }
+        }
+
+        return false;
+    }
+
+    private void SplitData(out char signal, out int packetNumber, out int invPacketNumber, out byte[] contentData, out byte[] verification)
+    {
+        if (_data is null) throw new NullReferenceException("Data cannot be null!");
+        
+        signal = (char)_data[0];
+        packetNumber = _data[1];
+        invPacketNumber = _data[2];
+        contentData = _data[3..131];
+        verification = _data[131..];
     }
 
     private bool IsLastPacket()
@@ -78,48 +121,12 @@ public class Receiver : PortManager
 
     private void AddReceived(byte[] contentData)
     {
-        received.AddRange(contentData);
+        _received.AddRange(contentData);
         _printer("Data received.\n");
-    }
-
-    public bool StartTransmission()
-    {
-        var (signal, timeout) = _method switch
-        {
-            VerificationMethod.CheckSum => (Global.NAK, 10),
-            VerificationMethod.CRC => (Global.C, 3),
-            _ => throw new ArgumentOutOfRangeException(),
-        };
-
-        var startTime = Stopwatch.StartNew();
-        var responseTime = Stopwatch.StartNew();
-        while (startTime.Elapsed.Seconds < 60)
-        {
-            WriteSignal(signal);
-            responseTime.Restart();
-            while (responseTime.Elapsed.Seconds < timeout)
-            {
-                if (_serialPort.BytesToRead > 0) return true;
-                Thread.Sleep(10);
-            }
-        }
-
-        return false;
-    }
-
-    private void SplitData(out char signal, out int packetNumber, out int invPacketNumber, out byte[] contentData, out byte[] verification)
-    {
-        if (_data is null) throw new NullReferenceException("Data cannot be null!");
-        
-        signal = (char) _data[0];
-        packetNumber = _data[1];
-        invPacketNumber = _data[2];
-        contentData = _data[3..131];
-        verification = _data[131..];
     }
 
     public byte[] GetReceived()
     {
-        return received.ToArray();
+        return _received.ToArray();
     }
 }
