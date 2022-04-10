@@ -67,7 +67,7 @@ public abstract class PortManager
         };
     }
 
-    private static byte[] CheckSum(byte[] data)
+    protected static byte[] CheckSum(byte[] data)
     {
         byte sum = 0;
         foreach (byte b in data)
@@ -77,7 +77,7 @@ public abstract class PortManager
         return new[] { sum };
     }
 
-    private static byte[] CRC(byte[] data)
+    protected static byte[] CRC(byte[] data)
     {
         throw new NotImplementedException();
     }

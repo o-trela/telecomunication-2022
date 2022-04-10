@@ -15,19 +15,69 @@ public class Transmitter : PortManager
     public override void Process()
     {
         if (!StartTransmission()) return;
-
-        int blockSize = Global.BlockSize;
+        
         int dataLength = _data.Length;
-        int packets = dataLength <= 0 ? 0 : (dataLength + 1) / 128;
-
-        for (int i = 0; i < packets; i++)
+        int packets = dataLength <= 0 ? 0 : (dataLength - 1) / 128 + 1; // 127 -> (127 - 1) / 128 + 1 = 1;
+                                                                        // 128 -> (128 - 1) / 128 + 1 = 1;
+        for (var i = 0; i < packets; i++)                               // 129 -> (129 - 1) / 128 + 1 = 2;
         {
-            int offset = i * blockSize;
-
-
-
+            byte[] packet = PreparePacket(i);
+            Write(packet);
+            while (true)
+            {
+                char signal = ReadSignal();
+                if (signal == Global.ACK) break;
+                if (signal == Global.NAK) Write(packet);
+                Thread.Sleep(10);
+            }
         }
 
+        EndOfTransmission();
+
+        _printer("Transmission ended successfully");
+    }
+
+    private void EndOfTransmission()
+    {
+        WriteSignal(Global.EOT);
+        while (true)
+        {
+            char signal = ReadSignal();
+            if (signal == Global.ACK) break;
+            if (signal == Global.NAK) WriteSignal(Global.EOT);
+            Thread.Sleep(10);
+        }
+    }
+
+    private byte[] PreparePacket(int i)
+    {
+        int verificationSize = (int) _method;
+        byte[] packet = new byte[3 + Global.BlockSize + verificationSize];
+        int blockSize = Global.BlockSize;
+        int offset = i * blockSize;
+        int counter = i + 1;
+        
+        packet[0] = (byte) Global.SOH;
+        packet[1] = (byte) counter;
+        packet[2] = (byte)(255 - counter);
+
+        for (var j = 0; j < Global.BlockSize; j++)
+        {
+            byte b = _data[offset + j];
+            if (_data.Length - 1 <= offset + j)
+            {
+                b = 0;
+            }
+            packet[3 + j] = b;
+        }
+
+        byte[] verificationBytes = CalculateVerification(packet);
+        for (int j = 0; j < verificationBytes.Length; j++)
+        {
+            packet[2 + Global.BlockSize + j] = verificationBytes[j];
+        }
+
+        return packet;
     }
 
     private bool StartTransmission()
@@ -50,5 +100,23 @@ public class Transmitter : PortManager
         }
 
         return false;
+    }
+    
+    private byte[] CalculateVerification(byte[] packet)
+    {
+        byte[] bytes;
+        switch (_method)
+        {
+            case VerificationMethod.CheckSum:
+                bytes = CheckSum(packet[3..]);
+                break;
+            case VerificationMethod.CRC:
+                bytes = CRC(packet[3..]);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+
+        return bytes;
     }
 }

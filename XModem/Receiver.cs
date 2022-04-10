@@ -55,7 +55,7 @@ public class Receiver : PortManager
             counter++;
         }
 
-        _printer("Transmition ended succesfully");
+        _printer("Transmission ended successfully");
     }
 
     private bool IsLastPacket()
@@ -116,5 +116,10 @@ public class Receiver : PortManager
         invPacketNumber = _data[2];
         contentData = _data[3..131];
         verification = _data[131..];
+    }
+
+    public byte[] GetReceived()
+    {
+        return received.ToArray();
     }
 }
