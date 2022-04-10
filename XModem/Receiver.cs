@@ -48,10 +48,6 @@ public class Receiver : PortManager
                 || packetNumber + invPacketNumber != 255
                 || !VerificationCode(_data).SequenceEqual(verification))
             {
-                Console.WriteLine(signal != Global.SOH);
-                Console.WriteLine(packetNumber != counter);
-                Console.WriteLine(packetNumber + invPacketNumber != 255);
-                Console.WriteLine(!VerificationCode(_data).SequenceEqual(verification));
                 NotAcknowledged();
                 continue;
             }

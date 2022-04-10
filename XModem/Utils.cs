@@ -44,14 +44,16 @@ public static class Utils
         return sb.ToString();
     }
 
-    public static T?[] SimulateNoise<T>(this T?[] data, double probability)
+    public static T?[] SimulateNoise<T>(this T?[] data, double probability = 0.5d)
     {
         var rng = Random.Shared;
-        if (rng.NextDouble() < probability)
-        {
-            int index = rng.Next(data.Length);
-            data[index] = default;
-        }
-        return data;
+        if (!(rng.NextDouble() < probability)) return data;
+
+        int dataLength = data.Length;
+        var dirtyData = new T?[dataLength];
+        Array.Copy(data, dirtyData, dataLength);
+        int index = rng.Next(dataLength);
+        dirtyData[index] = default;
+        return dirtyData;
     }
 }

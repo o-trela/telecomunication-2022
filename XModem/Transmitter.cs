@@ -22,12 +22,12 @@ public class Transmitter : PortManager
         for (var i = 0; i < packets; i++)                                       // 129 -> (129 - 1) / 128 + 1 = 2;
         {
             byte[] packet = PreparePacket(i);
-            Write(packet);
+            Write(packet.SimulateNoise(0.5));
             while (true)
             {
                 char signal = ReadSignal();
                 if (signal == Global.ACK) break;
-                if (signal == Global.NAK) Write(packet);
+                if (signal == Global.NAK) Write(packet.SimulateNoise(0.3));
                 Global.Wait();
             }
         }

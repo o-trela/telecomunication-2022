@@ -52,9 +52,6 @@ public class Program
         };
         manager.Open();
         manager.Process();
-
-        Console.ReadLine();
-        return;
     }
 
     private static void Println(object? text, Color font = Color.White, Color bg = Color.Black) => Print($"{text}\n", font, bg);
