@@ -2,6 +2,7 @@
 
 namespace XModem;
 using Color = ConsoleColor;
+using Verification = PortManager.VerificationMethod;
 
 public class Program
 {
@@ -12,57 +13,61 @@ public class Program
     public static void Main(string[] args)
     {
         FileManager.EnsureDirectoryIsValid();
-        Println("Telekomunikacja i Przetwarzanie Sygnałów 2022 - XModem\n", Color.Cyan, Color.Magenta);
+        ICommunicator comm = new Logger();
+
+        comm.PrintHeader("Telekomunikacja i Przetwarzanie Sygnałów 2022 - XModem");
 
         if (args.Length == 3)
         {
-            Run(Int32.Parse(args[0]), args[1], args[2]);
+            Run(Int32.Parse(args[0]), args[1], args[2], Verification.CheckSum);
+        }
+        else if (args.Length == 4)
+        {
+            Run(Int32.Parse(args[0]), args[1], args[2], (Verification)Int32.Parse(args[3]));
         }
         else
         {
-            Println("Wybierz funkcje programu:\n" +
+            comm.Print("Wybierz funkcje programu:\n" +
                 "1. Nadajnik\n" +
                 "2. Odbiornik");
-            Print("Wybor: ");
+            comm.Prompt("Wybor: ");
             int mode = Utils.ReadInt32(1, 2);
+
             string[] ports = PortManager.GetPorts();
-            Println("Wybierz numer portu szeregowego:");
-            for (var i = 0; i < ports.Length; i++) Println($"{i + 1}. {ports[i]}");
-            Print("Wybor: ");
+            comm.Print("Wybierz numer portu szeregowego:");
+            for (var i = 0; i < ports.Length; i++) comm.Print($"{i + 1}. {ports[i]}");
+            comm.Prompt("Wybor: ");
             int port = Utils.ReadInt32(1, ports.Length);
 
-            Println("Podaj ścieżkę do pliku docelowego:");
+            comm.Prompt("Podaj ścieżkę do pliku docelowego:");
             string filePath = Console.ReadLine() ?? "null";
 
-            Run(mode, ports[port - 1], filePath);
+            comm.Print("Wybierz metodę werydikacji poprawności zawartości:\n" +
+                "1. Checksum\n" +
+                "2. CRC");
+            comm.Prompt("Wybor: ");
+            Verification method = (Verification)Utils.ReadInt32(1, 2);
+
+
+            Run(mode, ports[port - 1], filePath, method);
         }
 
         Console.ReadLine();
     }
 
-    private static void Run(int mode, string portName, string filePath)
+    private static void Run(int mode, string portName, string fileName, Verification method, ILogger? logger = null)
     {
-        var fileManager = new FileManager(filePath);
+        if (logger is null) logger = new Logger();
+
+        var fileManager = new FileManager(fileName);
 
         PortManager manager = mode switch
         {
-            1 => new Transmitter(portName, fileManager.Read(), PortManager.VerificationMethod.CheckSum, o => Print(o)),
-            2 => new Receiver(portName, fileManager.Write, PortManager.VerificationMethod.CheckSum, o => Print(o)),
+            1 => new Transmitter(portName, fileManager.Read(), method, logger),
+            2 => new Receiver(portName, fileManager.Write, method, logger),
             _ => throw new ArgumentException($"Mode {mode} is not correct!"),
         };
         manager.Open();
         manager.Process();
-    }
-
-    private static void Println(object? text, Color font = Color.White, Color bg = Color.Black) => Print($"{text}\n", font, bg);
-    private static void Print(object? text, Color font = Color.White, Color bg = Color.Black)
-    {
-        Console.ForegroundColor = font;
-        Console.BackgroundColor = bg;
-
-        Console.Write(text);
-
-        Console.ForegroundColor = Color.White;
-        Console.BackgroundColor = Color.Black;
     }
 }
