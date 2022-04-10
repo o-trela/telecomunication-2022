@@ -54,6 +54,8 @@ public class Receiver : PortManager
                 continue;
             }
 
+            contentData = CheckForComplement(contentData);
+
             AddReceived(contentData);
             Acknowledged();
             counter++;
@@ -104,6 +106,35 @@ public class Receiver : PortManager
         invPacketNumber = _data[2];
         contentData = _data[3..131];
         verification = _data[131..];
+    }
+    
+    private byte[] CheckForComplement(byte[] contentData)
+    {
+        byte lastByte = contentData[^1];
+        int length = contentData.Length;
+        bool validFlag = true;
+        
+        for (var i = length - 2; i >= length - 1 - lastByte; i--)
+        {
+            if (contentData[i] == 0) continue;
+            validFlag = false;
+            break;
+        }
+
+        if (validFlag)
+        {
+            int newLength = length - (lastByte + 1);
+            var clearedData = new byte[newLength];
+            
+            for (var i = 0; i < newLength; i++)
+            {
+                clearedData[i] = contentData[i];
+            }
+
+            return clearedData;
+        }
+
+        return contentData;
     }
 
     private bool IsLastPacket()

@@ -76,6 +76,7 @@ public class Transmitter : PortManager
         byte[] packet = new byte[3 + blockSize + verificationSize];
         int offset = i * blockSize;
         int counter = (i + 1) % 255; // idk if this should work like that, now its working for more than 255 packets sent.
+        int zeroCounter = 0;
         
         packet[0] = (byte)Global.SOH;
         packet[1] = (byte)counter;
@@ -84,7 +85,13 @@ public class Transmitter : PortManager
         for (var j = 0; j < blockSize; j++)
         {
             byte b;
-            if (_data.Length - 1 <= offset + j) b = 0;
+            if (_data.Length <= offset + j) // TODO: packet is initially filled with zeros
+                                            // TODO: so it can be just calculated how many zeros we left in packet and put count at the end
+            {
+                if (j == blockSize - 1) b = (byte) zeroCounter;
+                else b = 0;
+                zeroCounter++;
+            }
             else b = _data[offset + j];
 
             packet[3 + j] = b;
