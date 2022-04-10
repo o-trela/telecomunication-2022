@@ -1,6 +1,6 @@
-﻿using System.Globalization;
+﻿using System.Collections;
+using System.Globalization;
 using System.Text;
-using System.Collections;
 
 namespace XModem;
 
@@ -46,6 +46,8 @@ public static class Utils
 
     public static T?[] SimulateNoise<T>(this T?[] data, double probability = 0.5d)
     {
+        if (probability <= 0.0 || probability > 1.0) return data;
+
         var rng = Random.Shared;
         if (!(rng.NextDouble() < probability)) return data;
 

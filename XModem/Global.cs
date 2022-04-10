@@ -13,6 +13,8 @@ public static class Global
     public static readonly char BEL = (char)0x07; // Just For Fun
     public static readonly char C = 'C';
 
+    public static readonly double Interference = 0.4;
+
     public static void Wait(int miliseconds = 100)
     {
         Thread.Sleep(miliseconds);

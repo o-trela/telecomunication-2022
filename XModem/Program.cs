@@ -1,7 +1,4 @@
-﻿using System;
-
-namespace XModem;
-using Color = ConsoleColor;
+﻿namespace XModem;
 using Verification = PortManager.VerificationMethod;
 
 public class Program

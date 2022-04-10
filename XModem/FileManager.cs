@@ -3,7 +3,7 @@
 public class FileManager
 {
     public static readonly string BaseDataDirPath = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
+        Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
         "Studia_2022",
         "telekomunikacja_2022"
     );

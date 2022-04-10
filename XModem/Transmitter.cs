@@ -6,7 +6,7 @@ public class Transmitter : PortManager
 {
     private readonly byte[] _data;
 
-    public Transmitter(string portName, byte[] data, VerificationMethod method, ILogger logger) 
+    public Transmitter(string portName, byte[] data, VerificationMethod method, ILogger logger)
         : base(portName, method, logger)
     {
         _data = data;
@@ -22,7 +22,7 @@ public class Transmitter : PortManager
         for (var i = 0; i < packets; i++)
         {
             byte[] packet = PreparePacket(i);
-            Write(packet/*.SimulateNoise(0.5)*/);
+            Write(packet.SimulateNoise(Global.Interference));
             _logger.Log($"Packet #{i + 1} sent.");
             while (true)
             {
@@ -36,7 +36,7 @@ public class Transmitter : PortManager
                 if (signal == Global.NAK)
                 {
                     _logger.LogWarning($"NAK signal received. Resending packet #{i + 1}.");
-                    Write(packet/*.SimulateNoise(0.3)*/);
+                    Write(packet.SimulateNoise(Global.Interference));
                 }
                 Global.Wait();
             }

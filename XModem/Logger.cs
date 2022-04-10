@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace XModem;
+﻿namespace XModem;
 using Color = ConsoleColor;
 
 public class Logger : ILogger, ICommunicator

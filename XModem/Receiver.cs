@@ -1,6 +1,4 @@
 using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Xml;
 
 namespace XModem;
 
@@ -10,7 +8,7 @@ public class Receiver : PortManager
     private readonly Action<byte[]> _writer;
     private readonly List<byte> _received;
 
-    public Receiver(string portName, Action<byte[]> writer, VerificationMethod method, ILogger logger) 
+    public Receiver(string portName, Action<byte[]> writer, VerificationMethod method, ILogger logger)
         : base(portName, method, logger)
     {
         _received = new();
@@ -100,20 +98,20 @@ public class Receiver : PortManager
     private void SplitData(out char signal, out int packetNumber, out int invPacketNumber, out byte[] contentData, out byte[] verification)
     {
         if (_data is null) throw new NullReferenceException("Data cannot be null!");
-        
+
         signal = (char)_data[0];
         packetNumber = _data[1];
         invPacketNumber = _data[2];
         contentData = _data[3..131];
         verification = _data[131..];
     }
-    
+
     private byte[] CheckForComplement(byte[] contentData)
     {
         byte lastByte = contentData[^1];
         int length = contentData.Length;
         bool validFlag = lastByte > 0;
-        
+
         for (var i = length - 2; i > length - 2 - lastByte; i--)
         {
             if (contentData[i] == 0) continue;
@@ -125,7 +123,7 @@ public class Receiver : PortManager
         {
             int newLength = length - (lastByte + 1); // new length is reduced by last byte value (zero counter) and this number of zeros
             var clearedData = new byte[newLength];
-            
+
             for (var i = 0; i < newLength; i++)
             {
                 clearedData[i] = contentData[i];

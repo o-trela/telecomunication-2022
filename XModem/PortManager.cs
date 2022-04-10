@@ -1,7 +1,4 @@
-﻿using System;
-using System.Globalization;
-using System.Text;
-using System.IO.Ports;
+﻿using System.IO.Ports;
 
 namespace XModem;
 
@@ -21,7 +18,7 @@ public abstract class PortManager
             DataBits = 8,
             StopBits = StopBits.One,
         };
-        
+
         _method = method;
         _logger = logger;
     }
@@ -42,7 +39,7 @@ public abstract class PortManager
         }
     }
 
-    public void WriteSignal(char signal) => _serialPort.Write(new[] { (byte) signal }, 0, 1);
+    public void WriteSignal(char signal) => _serialPort.Write(new[] { (byte)signal }, 0, 1);
 
     public char ReadSignal() => (char)_serialPort.ReadChar();
 
@@ -91,7 +88,7 @@ public abstract class PortManager
         const int Bits = 8;
 
         int offset = Global.HeaderSize;
-        
+
         int crc = 0;
         for (int i = offset; i < Global.BlockSize + offset; i++)
         {
