@@ -1,7 +1,10 @@
 ﻿namespace XModem;
 
 public static class Global
-{ 
+{
+
+    public static readonly int BlockSize = 128;
+
     public static readonly char SOH = (char)0x01;
     public static readonly char EOT = (char)0x04;
     public static readonly char ACK = (char)0x06;

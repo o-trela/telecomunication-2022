@@ -84,16 +84,15 @@ public class Receiver : PortManager
 
     public bool StartTransmission()
     {
-        var startTime = new Stopwatch();
-        var responseTime = new Stopwatch();
         var (signal, timeout) = _method switch
         {
             VerificationMethod.CheckSum => (Global.NAK, 10),
             VerificationMethod.CRC => (Global.C, 3),
-            _ => throw new ArgumentOutOfRangeException()
+            _ => throw new ArgumentOutOfRangeException(),
         };
 
-        startTime.Start();
+        var startTime = Stopwatch.StartNew();
+        var responseTime = Stopwatch.StartNew();
         while (startTime.Elapsed.Seconds < 60)
         {
             WriteSignal(signal);
