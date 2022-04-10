@@ -112,9 +112,9 @@ public class Receiver : PortManager
     {
         byte lastByte = contentData[^1];
         int length = contentData.Length;
-        bool validFlag = true;
+        bool validFlag = lastByte > 0;
         
-        for (var i = length - 2; i >= length - 1 - lastByte; i--)
+        for (var i = length - 2; i > length - 2 - lastByte; i--)
         {
             if (contentData[i] == 0) continue;
             validFlag = false;
@@ -123,7 +123,7 @@ public class Receiver : PortManager
 
         if (validFlag)
         {
-            int newLength = length - (lastByte + 1);
+            int newLength = length - (lastByte + 1); // new length is reduced by last byte value (zero counter) and this number of zeros
             var clearedData = new byte[newLength];
             
             for (var i = 0; i < newLength; i++)
