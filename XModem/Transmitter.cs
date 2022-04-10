@@ -22,7 +22,7 @@ public class Transmitter : PortManager
         for (var i = 0; i < packets; i++)
         {
             byte[] packet = PreparePacket(i);
-            Write(packet.SimulateNoise(0.5));
+            Write(packet/*.SimulateNoise(0.5)*/);
             _logger.Log($"Packet #{i + 1} sent.");
             while (true)
             {
@@ -36,7 +36,7 @@ public class Transmitter : PortManager
                 if (signal == Global.NAK)
                 {
                     _logger.LogWarning($"NAK signal received. Resending packet #{i + 1}.");
-                    Write(packet.SimulateNoise(0.3));
+                    Write(packet/*.SimulateNoise(0.3)*/);
                 }
                 Global.Wait();
             }
@@ -85,7 +85,7 @@ public class Transmitter : PortManager
         {
             if (_data.Length <= offset + j)
             {
-                packet[3 + blockSize - 1] = (byte)(offset + blockSize - _data.Length);
+                packet[3 + blockSize - 1] = (byte)(offset + blockSize - _data.Length - 1);
                 break;
             }
             byte b = _data[offset + j];
