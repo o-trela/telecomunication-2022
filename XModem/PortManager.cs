@@ -8,10 +8,10 @@ namespace XModem;
 public abstract class PortManager
 {
     protected readonly SerialPort _serialPort;
-    protected readonly Action<object> _printer;
+    protected readonly ILogger _logger;
     protected readonly VerificationMethod _method;
 
-    protected PortManager(string portName, VerificationMethod method, Action<object> printer)
+    protected PortManager(string portName, VerificationMethod method, ILogger logger)
     {
         _serialPort = new SerialPort()
         {
@@ -23,7 +23,7 @@ public abstract class PortManager
         };
         
         _method = method;
-        _printer = printer;
+        _logger = logger;
     }
 
     public abstract void Process();
@@ -33,11 +33,11 @@ public abstract class PortManager
         try
         {
             _serialPort.Open();
-            _printer($"Otworzenie portu {_serialPort.PortName} zakończone sukcesem\n\n");
+            _logger.LogProgress($"Otworzenie portu {_serialPort.PortName} zakończone sukcesem\n");
         }
         catch (Exception e)
         {
-            _printer($"Otworzenie portu {_serialPort.PortName} nie powiodło się.\n{e.Message}");
+            _logger.LogError($"Otworzenie portu {_serialPort.PortName} nie powiodło się.\n{e.Message}");
             throw;
         }
     }
@@ -95,8 +95,7 @@ public abstract class PortManager
         int crc = 0;
         for (int i = offset; i < Global.BlockSize + offset; i++)
         {
-            byte b = data[i];
-            crc ^= b << Bits;
+            crc ^= data[i] << Bits;
             for (int j = 0; j < Bits; j++)
             {
                 crc <<= 1;

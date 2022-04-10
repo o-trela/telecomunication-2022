@@ -6,8 +6,8 @@ public class Transmitter : PortManager
 {
     private readonly byte[] _data;
 
-    public Transmitter(string portName, byte[] data, VerificationMethod method, Action<object> printer) 
-        : base(portName, method, printer)
+    public Transmitter(string portName, byte[] data, VerificationMethod method, ILogger logger) 
+        : base(portName, method, logger)
     {
         _data = data;
     }
@@ -23,19 +23,19 @@ public class Transmitter : PortManager
         {
             byte[] packet = PreparePacket(i);
             Write(packet.SimulateNoise(0.5));
-            _printer($"Packet #{i + 1} sent.\n");
+            _logger.Log($"Packet #{i + 1} sent.");
             while (true)
             {
                 char signal = ReadSignal();
                 if (signal == Global.ACK)
                 {
-                    _printer("ACK signal received.\n");
+                    _logger.Log("ACK signal received.");
                     break;
                 }
 
                 if (signal == Global.NAK)
                 {
-                    _printer($"NAK signal received. Resending packet #{i + 1}.\n");
+                    _logger.LogWarning($"NAK signal received. Resending packet #{i + 1}.");
                     Write(packet.SimulateNoise(0.3));
                 }
                 Global.Wait();
@@ -44,25 +44,25 @@ public class Transmitter : PortManager
 
         EndOfTransmission();
 
-        _printer("Transmission ended successfully.\n");
+        _logger.LogSuccess("Transmission ended successfully.");
     }
 
     private void EndOfTransmission()
     {
         WriteSignal(Global.EOT);
-        _printer("EOT signal sent.\n");
+        _logger.Log("EOT signal sent.");
         while (true)
         {
             char signal = ReadSignal();
             if (signal == Global.ACK)
             {
-                _printer("ACK signal received.\n");
+                _logger.Log("ACK signal received.");
                 break;
             }
 
             if (signal == Global.NAK)
             {
-                _printer($"NAK signal received. Resending EOT signal.\n");
+                _logger.LogWarning($"NAK signal received. Resending EOT signal.");
                 WriteSignal(Global.EOT);
             }
             Global.Wait();
@@ -118,12 +118,12 @@ public class Transmitter : PortManager
         var startTime = Stopwatch.StartNew();
         while (startTime.Elapsed.Seconds < 60)
         {
-            _printer($"Waiting for {printableSignal} signal.\n");
+            _logger.Log($"Waiting for {printableSignal} signal.");
             if (_serialPort.BytesToRead > 0)
             {
                 if (ReadSignal() == signal)
                 {
-                    _printer($"{printableSignal} received. Starting transmission.\n");
+                    _logger.LogProgress($"{printableSignal} received. Starting transmission.");
                     return true;
                 }
             }

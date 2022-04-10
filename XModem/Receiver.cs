@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Runtime.InteropServices;
+﻿using System.Diagnostics;using System.Runtime.InteropServices;
 using System.Xml;
 
 namespace XModem;
@@ -10,8 +9,8 @@ public class Receiver : PortManager
     private readonly Action<byte[]> _writer;
     private readonly List<byte> _received;
 
-    public Receiver(string portName, Action<byte[]> writer, VerificationMethod method, Action<object> printer) 
-        : base(portName, method, printer)
+    public Receiver(string portName, Action<byte[]> writer, VerificationMethod method, ILogger logger) 
+        : base(portName, method, logger)
     {
         _received = new();
         _writer = writer;
@@ -33,7 +32,7 @@ public class Receiver : PortManager
 
             if (IsLastPacket())
             {
-                _printer($"EOT signal received.\n");
+                _logger.Log($"EOT signal received.");
                 Acknowledged();
                 break;
             }
@@ -49,7 +48,7 @@ public class Receiver : PortManager
                 || packetNumber + invPacketNumber != 255
                 || !VerificationCode(_data).SequenceEqual(verification))
             {
-                _printer($"Noise detected.\n");
+                _logger.LogWarning($"Noise detected.");
                 NotAcknowledged();
                 continue;
             }
@@ -63,7 +62,7 @@ public class Receiver : PortManager
         }
 
         _writer(GetReceived());
-        _printer("Transmission ended successfully.\n");
+        _logger.LogSuccess("Transmission ended successfully.");
     }
 
     private bool StartTransmission()
@@ -80,18 +79,18 @@ public class Receiver : PortManager
         while (startTime.Elapsed.Seconds < 60)
         {
             WriteSignal(signal);
-            _printer($"{printableSignal} sent.\n");
+            _logger.Log($"{printableSignal} sent.");
             responseTime.Restart();
             while (responseTime.Elapsed.Seconds < timeout)
             {
                 if (_serialPort.BytesToRead > 0)
                 {
-                    _printer("First packet discovered. Starting transmission.\n");
+                    _logger.LogProgress("First packet discovered. Starting transmission.");
                     return true;
                 }
                 Global.Wait();
             }
-            _printer("Timeout.\n");
+            _logger.Log("Timeout.");
         }
 
         return false;
@@ -146,19 +145,19 @@ public class Receiver : PortManager
     private void NotAcknowledged()
     {
         WriteSignal(Global.NAK);
-        _printer("Packet not acknowledged! (NAK)\n");
+        _logger.LogWarning("Packet not acknowledged! (NAK)");
     }
 
     private void Acknowledged()
     {
         WriteSignal(Global.ACK);
-        _printer("Packet acknowledged! (ACK)\n");
+        _logger.Log("Packet acknowledged! (ACK)");
     }
 
     private void AddReceived(byte[] contentData)
     {
         _received.AddRange(contentData);
-        _printer("Data received.\n");
+        _logger.Log("Data received.");
     }
 
     private byte[] GetReceived()
