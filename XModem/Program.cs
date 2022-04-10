@@ -14,58 +14,28 @@ using Color = ConsoleColor;
 
 public class Program
 {
-    public static void Main()
+    public static void Main(string[] args)
     {
-        /*
-        int mode; // 1 - Nadajnik, 2 - Odbiornik
-        int port;
-        //string filePath;
-
-        Println("Telekomunikacja i Przetwarzanie Sygnałów 2022 - XModem\n", Color.Cyan, Color.Magenta);
-        Println("Wybierz funkcje programu:\n" +
-            "1. Nadajnik\n" +
-            "2. Odbiornik");
-        Print("Wybor: ");
-        mode = Utils.ReadInt32(1, 2);
-
-        string[] ports = PortManager.GetPorts();
-
-        Println("Wybierz numer portu szeregowego:");
-        for (int i = 0; i < ports.Length; i++)
+        if (args.Length == 3)
         {
-            Println($"{i+1}. {ports[i]}");
-        }
-        Print("Wybor: ");
-        port = Utils.ReadInt32(1, ports.Length);
+            int mode = Int32.Parse(args[0]); // 1 - Nadajnik, 2 - Odbiornik
+            int portNumber = Int32.Parse(args[1]); // Numer Portu COM
+            string filepath = args[2]; // Ścieżka do pliku żródłowego lub docelowego 9zależne od 'mode'
+            PortManager manager = mode switch
+            {
+                1 => new Transmitter(portNumber, new byte[] { 69, 42, 0 }, PortManager.VerificationMethod.CheckSum, o => Print(o)),
+                2 => new Receiver(portNumber, PortManager.VerificationMethod.CheckSum, o => Print(o)),
+                _ => throw new ArgumentException($"Mode {mode} is not correct!"),
+            };
+            manager.Open();
+            manager.Process();
 
-        var portManager = new PortManager(port, (o) => Print(o));
-        portManager.Open();
-
-        bool cont = true;
-        switch (mode)
-        {
-            case 1:
-                while (cont)
-                {
-                    var keyInfo = Console.ReadKey();
-                    string message = Char.ToString(keyInfo.KeyChar);
-                    portManager.Write(message);
-                    cont = !message.Equals("q", StringComparison.OrdinalIgnoreCase);
-                }
-                break;
-            case 2:
-                while (cont)
-                {
-                    string message = portManager.Read();
-                    cont = !message.Equals("q", StringComparison.OrdinalIgnoreCase);
-                }
-                break;
+            Console.ReadLine();
+            return;
         }
-        */
 
         Receiver receiver = new Receiver(1, PortManager.VerificationMethod.CheckSum, o => Print(o));
         receiver.StartTransmission();
-
 
         //Console.ReadLine();
     }

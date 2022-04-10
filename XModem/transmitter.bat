@@ -1,0 +1,1 @@
+.\bin\Debug\net6.0\XModem.exe 1 2 .\zrodlo.txt
