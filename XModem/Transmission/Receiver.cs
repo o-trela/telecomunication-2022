@@ -20,20 +20,21 @@ public class Receiver : PortManager
     public override void Process()
     {
         if (!StartTransmission()) return;
-
-        int counter = 1;
+        bool newPacket = true;
+        int packet = 1;
         while (true)
         {
+            if (newPacket) _logger.Log($"Packet #{packet}");
+
             _data = null;
             while (_data is null)
             {
-                Global.Wait();
                 _data = Read();
             }
 
             if (IsLastPacket())
             {
-                _logger.Log($"EOT signal received.");
+                _logger.Log($"\tEOT signal received.");
                 Acknowledged();
                 break;
             }
@@ -45,21 +46,21 @@ public class Receiver : PortManager
                       out byte[] verification);
 
             if (signal != Global.SOH
-                || packetNumber != counter
+                || packetNumber != packet % 255
                 || packetNumber + invPacketNumber != 255
                 || !VerificationCode(_data).SequenceEqual(verification))
             {
-                _logger.LogWarning($"Noise detected.");
                 NotAcknowledged();
+                newPacket = false;
                 continue;
             }
 
             contentData = CheckForComplement(contentData);
 
-            AddReceived(contentData);
             Acknowledged();
-            counter++;
-            counter %= 255;
+            AddReceived(contentData);
+            packet++;
+            newPacket = true;
         }
 
         _writer(GetReceived());
@@ -81,12 +82,13 @@ public class Receiver : PortManager
         {
             WriteSignal(signal);
             _logger.Log($"{printableSignal} sent.");
+
             responseTime.Restart();
             while (responseTime.Elapsed.Seconds < timeout)
             {
                 if (_serialPort.BytesToRead > 0)
                 {
-                    _logger.LogProgress("First packet discovered. Starting transmission.");
+                    _logger.LogProgress("\nFirst packet discovered. Starting transmission.");
                     return true;
                 }
                 Global.Wait();
@@ -108,7 +110,7 @@ public class Receiver : PortManager
         verification = _data[131..];
     }
 
-    private byte[] CheckForComplement(byte[] contentData)
+    private static byte[] CheckForComplement(byte[] contentData)
     {
         byte lastByte = contentData[^1];
         int length = contentData.Length;
@@ -146,19 +148,19 @@ public class Receiver : PortManager
     private void NotAcknowledged()
     {
         WriteSignal(Global.NAK);
-        _logger.LogWarning("Packet not acknowledged! (NAK)");
+        _logger.LogWarning("\tPacket not acknowledged! (NAK)");
     }
 
     private void Acknowledged()
     {
         WriteSignal(Global.ACK);
-        _logger.Log("Packet acknowledged! (ACK)");
+        _logger.Log("\tPacket acknowledged! (ACK)");
     }
 
     private void AddReceived(byte[] contentData)
     {
         _received.AddRange(contentData);
-        _logger.Log("Data received.");
+        _logger.Log("\tData saved.");
     }
 
     private byte[] GetReceived()

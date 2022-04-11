@@ -37,7 +37,7 @@ public class Program
             comm.Prompt("Wybor: ");
             int port = Utils.ReadInt32(1, ports.Length);
 
-            comm.Prompt("Podaj ścieżkę do pliku docelowego:");
+            comm.Prompt("Podaj nazwę pliku docelowego:");
             string filePath = Console.ReadLine() ?? "null";
 
             comm.Print("Wybierz metodę werydikacji poprawności zawartości:\n" +
