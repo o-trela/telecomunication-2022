@@ -63,8 +63,7 @@ public class Receiver : PortManager
             newPacket = true;
         }
 
-        _writer(GetReceived());
-        _logger.LogSuccess("Transmission ended successfully.");
+        EndTransmission();
     }
 
     private bool StartTransmission()
@@ -91,12 +90,19 @@ public class Receiver : PortManager
                     _logger.LogProgress("\nFirst packet discovered. Starting transmission.");
                     return true;
                 }
-                Global.Wait();
             }
             _logger.Log("Timeout.");
         }
 
+        _serialPort.DiscardOutBuffer();
         return false;
+    }
+
+    private void EndTransmission()
+    {
+        _writer(GetReceived());
+        _logger.LogSuccess("Transmission ended successfully.");
+        _serialPort.Dispose();
     }
 
     private void SplitData(out char signal, out int packetNumber, out int invPacketNumber, out byte[] contentData, out byte[] verification)

@@ -78,8 +78,7 @@ public abstract class PortManager
         byte sum = 0;
         for (var i = offset; i < Global.BlockSize + offset; i++)
         {
-            byte b = data[i];
-            sum += b;
+            sum += data[i];
         }
         return new[] { sum };
     }
@@ -97,11 +96,12 @@ public abstract class PortManager
             crc ^= data[i] << Bits;
             for (var j = 0; j < Bits; j++)
             {
-                crc <<= 1;
-                if ((crc & 0x8000) != 0) crc ^= Polynomial;
+
+                if ((crc & 0x8000) != 0) crc = (crc << 1) ^ Polynomial;
+                else crc <<= 1;
             }
         }
-        return new[] { (byte)crc, (byte)(crc >> 8) };
+        return new[] { (byte)(crc >> 8), (byte)crc };
     }
 
     public static string[] GetPorts()
