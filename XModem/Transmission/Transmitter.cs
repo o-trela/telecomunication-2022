@@ -29,7 +29,7 @@ public class Transmitter : PortManager
             while (true)
             {
                 char signal = ReadSignal();
-                if (signal == Global.ACK)
+                if (signal == Global.ACK || signal == Global.C)
                 {
                     _logger.Log("\tACK signal received.");
                     break;
@@ -44,8 +44,6 @@ public class Transmitter : PortManager
         }
 
         EndOfTransmission(packets);
-
-        _logger.LogSuccess("Transmission ended successfully.");
     }
 
     private bool StartTransmission()
@@ -66,6 +64,7 @@ public class Transmitter : PortManager
             {
                 if (ReadSignal() == signal)
                 {
+                    _serialPort.DiscardInBuffer();
                     _logger.LogProgress($"{printableSignal} received. Starting transmission.");
                     return true;
                 }
@@ -95,6 +94,9 @@ public class Transmitter : PortManager
                 WriteSignal(Global.EOT);
             }
         }
+
+        _logger.LogSuccess("Transmission ended successfully.");
+        _serialPort.Dispose();
     }
 
     private byte[] PreparePacket(int i)
