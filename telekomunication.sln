@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCorrection", "CodeCorrection\CodeCorrection.csproj", "{BFF77726-C9DA-47E4-AF51-AA951321C652}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XModem", "XModem\XModem.csproj", "{96A4368C-24C5-48AC-ABD9-06ABD1D04C08}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HuffmanCoding", "HuffmanCoding\HuffmanCoding.csproj", "{2380B1BE-6F19-469E-A666-326998AF0373}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BFF77726-C9DA-47E4-AF51-AA951321C652}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFF77726-C9DA-47E4-AF51-AA951321C652}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFF77726-C9DA-47E4-AF51-AA951321C652}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFF77726-C9DA-47E4-AF51-AA951321C652}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96A4368C-24C5-48AC-ABD9-06ABD1D04C08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96A4368C-24C5-48AC-ABD9-06ABD1D04C08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96A4368C-24C5-48AC-ABD9-06ABD1D04C08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96A4368C-24C5-48AC-ABD9-06ABD1D04C08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2380B1BE-6F19-469E-A666-326998AF0373}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2380B1BE-6F19-469E-A666-326998AF0373}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2380B1BE-6F19-469E-A666-326998AF0373}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2380B1BE-6F19-469E-A666-326998AF0373}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
