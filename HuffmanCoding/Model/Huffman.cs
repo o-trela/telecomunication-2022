@@ -1,8 +1,16 @@
-﻿namespace HuffmanCoding.Model;
+﻿using System.Text;
+
+namespace HuffmanCoding.Model;
 
 public class Huffman
 {
-    public HuffmanNode? CreateDictionary(Dictionary<char, int> baseDictionary)
+    public Huffman()
+    {
+        Dictionary = new Dictionary<char, string>();
+    }
+
+    public Dictionary<char, string> Dictionary { get; }
+    public HuffmanNode? CreateTree(Dictionary<char, int> baseDictionary)
     {
         PriorityQueue<HuffmanNode?, int> queue 
             = new PriorityQueue<HuffmanNode?, int>();
@@ -32,5 +40,19 @@ public class Huffman
         }
 
         return root;
+    }
+
+    public void CreateDictionary(HuffmanNode? node, string word)
+    { 
+        if (node.Left == null
+            && node.Right == null
+            && Char.IsLetter(node.Character))
+        {
+            Dictionary.Add(node.Character, word);
+            return;
+        }
+
+        CreateDictionary(node.Left, word + '0');
+        CreateDictionary(node.Right, word + '1');
     }
 }
