@@ -10,10 +10,10 @@ public class HuffmanNode
         Right = right;
     }
 
-    public int Freq { get; set; }
-    public char Character { get; set; }
+    public int Freq { get; }
+    public char Character { get; }
 
-    public HuffmanNode? Left { get; set; }
-    public HuffmanNode? Right { get; set; }
+    public HuffmanNode? Left { get; }
+    public HuffmanNode? Right { get; }
     
 }
