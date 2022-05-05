@@ -1,5 +1,7 @@
 ﻿
+using System.Net;
 using HuffmanCoding.Model;
+using HuffmanCoding.Transmission;
 
 namespace HuffmanCoding;
 class Program
@@ -19,6 +21,24 @@ class Program
         var decoded = transformer.Decode(encoded, huffman.Dictionary);
         Console.WriteLine(encoded);
         Console.WriteLine(decoded);
+
+
+        const string ipAddress = "127.0.0.1";
+        const int port = 8080;
+
+        SocketConnection socketConnection = new SocketConnection(ipAddress, port);
+        
+        var choice = Console.ReadLine();
+        switch (choice)
+        {
+            case "1":
+                socketConnection.SendData("Ala ma kota!");
+                break;
+            case "2":
+                socketConnection.ReceiveData();
+                break;
+            default:
+                throw new Exception();
+        }
     }
-    
 }
