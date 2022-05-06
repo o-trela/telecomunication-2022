@@ -1,5 +1,6 @@
 ﻿
 using System.Net;
+using System.Runtime.Serialization.Formatters.Binary;
 using HuffmanCoding.Model;
 using HuffmanCoding.Transmission;
 
@@ -27,15 +28,27 @@ class Program
         const int port = 8080;
 
         SocketConnection socketConnection = new SocketConnection(ipAddress, port);
+
+        var bytes = Serializer.Serialize(huffman.Dictionary);
+        var dict = Serializer.Deserialize<Dictionary<char, string>>(bytes);
+
+        foreach (var keyPair in dict)
+        {
+            Console.WriteLine(keyPair.Key + " : " + keyPair.Value);
+        }
         
         var choice = Console.ReadLine();
         switch (choice)
         {
             case "1":
-                socketConnection.SendData("Ala ma kota!");
+                socketConnection.SendData(huffman.Dictionary);
                 break;
             case "2":
-                socketConnection.ReceiveData();
+                Dictionary<char, string> data = socketConnection.ReceiveData<Dictionary<char, string>>();
+                foreach (var keyPair in data)
+                {
+                    Console.WriteLine(keyPair.Key + " : " + keyPair.Value);
+                }
                 break;
             default:
                 throw new Exception();

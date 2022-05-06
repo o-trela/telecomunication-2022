@@ -15,7 +15,7 @@ public class SocketConnection
         _port = port;
     }
 
-    public void SendData(String message)
+    public void SendData<T>(T message)
     {
         TcpClient client = null!;
         NetworkStream stream = null!;
@@ -24,7 +24,7 @@ public class SocketConnection
         {
             client = new TcpClient(_ipAddress, _port);
 
-            Byte[] data = Encoding.ASCII.GetBytes(message);
+            Byte[] data = Serializer.Serialize(message);
 
             stream = client.GetStream();
             stream.Write(data, 0, data.Length);
@@ -48,7 +48,7 @@ public class SocketConnection
         Console.Read();
     }
     
-    public void ReceiveData()
+    public T ReceiveData<T>() where T : class
     {
         TcpListener server = null!;
         TcpClient client = null!;
@@ -60,9 +60,9 @@ public class SocketConnection
             server = new TcpListener(localAddr, _port);
             server.Start();
             
-            Byte[] bytes = new Byte[256];
-            String data;
-            
+            Byte[] bytes = new Byte[2048];
+            T data;
+
             while(true)
             {
                 Console.Write("Waiting for a connection... ");
@@ -72,11 +72,11 @@ public class SocketConnection
                 
                 stream = client.GetStream();
 
-                int i;
-                while((i = stream.Read(bytes, 0, bytes.Length))!=0)
+                while(stream.Read(bytes, 0, bytes.Length) != 0)
                 {
-                    data = Encoding.ASCII.GetString(bytes, 0, i);
+                    data = Serializer.Deserialize<T>(bytes);
                     Console.WriteLine("Received: {0}", data);
+                    return data;
                 }
             }
         }
@@ -93,5 +93,7 @@ public class SocketConnection
 
         Console.WriteLine("\nHit anything to continue...");
         Console.Read();
+
+        return null;
     }
 }
