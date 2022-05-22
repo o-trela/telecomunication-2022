@@ -4,54 +4,23 @@ namespace HuffmanCoding.Model;
 
 public class Huffman
 {
+    public Dictionary<char, string> Dictionary { get; init; }
+
     public Huffman(string letterChain)
     {
         Dictionary = new Dictionary<char, string>();
-        Dictionary<char, int> letterFreq = CountLetters(letterChain);
-        HuffmanNode? tree = CreateTree(letterFreq);
-        CreateDictionary(tree, "");
+        Dictionary<char, int> letterFreq = LettersToOccurences(letterChain);
+        Node? tree = CreateTree(letterFreq);
+        CreateDictionary(tree);
     }
 
-    public Dictionary<char, string> Dictionary { get; }
-    private HuffmanNode? CreateTree(Dictionary<char, int> baseDictionary)
-    {
-        PriorityQueue<HuffmanNode?, int> queue 
-            = new PriorityQueue<HuffmanNode?, int>();
-
-        foreach (var pair in baseDictionary)
-        {
-            HuffmanNode? huffmanNode 
-                = new HuffmanNode(pair.Value, pair.Key, null, null);
-            
-            queue.Enqueue(huffmanNode, huffmanNode.Freq);
-        }
-
-        HuffmanNode? root = null;
-
-        while (queue.Count > 1)
-        {
-            HuffmanNode? left = queue.Dequeue();
-            HuffmanNode? right = queue.Dequeue();
-
-            int freq = left.Freq + right.Freq;
-            
-            HuffmanNode? babyRoot = new HuffmanNode(freq, '-', left, right);
-
-            root = babyRoot;
-            
-            queue.Enqueue(babyRoot, babyRoot.Freq);
-        }
-
-        return root;
-    }
-
-    private void CreateDictionary(HuffmanNode? node, string word)
+    private void CreateDictionary(Node? node, string word = "")
     { 
         if (node?.Left is null
             && node?.Right is null
             || Char.IsLetter(node.Character))
         {
-            Dictionary.Add(node.Character, word);
+            Dictionary.Add(node!.Character, word);
             return;
         }
 
@@ -59,14 +28,57 @@ public class Huffman
         CreateDictionary(node.Right, word + '1');
     }
 
-    private Dictionary<char, int> CountLetters(string letterChain)
+    private static Node? CreateTree(Dictionary<char, int> baseDictionary)
     {
-        Dictionary<char, int> dictionary = new Dictionary<char, int>();
+        Node? root = null;
+        var queue = new PriorityQueue<Node?, int>();
 
-        foreach (var letter in letterChain.ToArray())
-            if (!dictionary.TryAdd(letter, 1))
-                dictionary[letter] += 1;
+        foreach (var pair in baseDictionary)
+        {
+            var huffmanNode = new Node(pair.Value, pair.Key, null, null);
+            queue.Enqueue(huffmanNode, huffmanNode.Freq);
+        }
+
+        while (queue.Count > 1)
+        {
+            Node? left = queue.Dequeue();
+            Node? right = queue.Dequeue();
+            int freq = left!.Freq + right!.Freq;
+
+            var babyRoot = new Node(freq, '-', left, right);
+            queue.Enqueue(babyRoot, babyRoot.Freq);
+
+            root = babyRoot;
+        }
+
+        return root;
+    }
+
+    private static Dictionary<char, int> LettersToOccurences(string letterChain)
+    {
+        var dictionary = new Dictionary<char, int>();
+
+        foreach (var letter in letterChain)
+        {
+            if (!dictionary.TryAdd(letter, 1)) dictionary[letter]++;
+        }
 
         return dictionary;
+    }
+
+    public class Node
+    {
+        public int Freq { get; }
+        public char Character { get; }
+        public Node? Left { get; }
+        public Node? Right { get; }
+
+        public Node(int freq, char character, Node? left, Node? right)
+        {
+            Freq = freq;
+            Character = character;
+            Left = left;
+            Right = right;
+        }
     }
 }

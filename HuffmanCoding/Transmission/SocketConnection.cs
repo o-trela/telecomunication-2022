@@ -6,6 +6,7 @@ namespace HuffmanCoding.Transmission;
 
 public class SocketConnection
 {
+    private readonly Encoding asciiEndocing = Encoding.ASCII;
     private readonly string _ipAddress;
     private readonly int _port;
 
@@ -17,81 +18,66 @@ public class SocketConnection
 
     public void SendData(String message)
     {
-        TcpClient client = null!;
-        NetworkStream stream = null!;
-        
         try
         {
-            client = new TcpClient(_ipAddress, _port);
+            byte[] data = asciiEndocing.GetBytes(message);
 
-            Byte[] data = Encoding.ASCII.GetBytes(message);
+            using var client = new TcpClient(_ipAddress, _port);
+            using NetworkStream stream = client.GetStream();
 
-            stream = client.GetStream();
             stream.Write(data, 0, data.Length);
-
-            Console.WriteLine("Sent: {0}", message);
+            Console.WriteLine($"Sent: {message}");
         }
         catch (Exception e)
         {
             if (e is ArgumentNullException or SocketException)
             {
-                Console.WriteLine("Exception: {0}", e);
+                Console.WriteLine($"Exception: {e}");
             }
         }
-        finally
-        {
-            client.Close();
-            stream.Close();
-        }
 
-        Console.WriteLine("\n Press anything to continue...");
+        Console.WriteLine("\nPress anything to continue...");
         Console.Read();
     }
-    
+
     public void ReceiveData()
     {
         TcpListener server = null!;
-        TcpClient client = null!;
-        NetworkStream stream = null!;
-        
+
         try
         {
             IPAddress localAddr = IPAddress.Parse(_ipAddress);
             server = new TcpListener(localAddr, _port);
             server.Start();
-            
-            Byte[] bytes = new Byte[256];
-            String data;
-            
-            while(true)
+
+            var bytes = new byte[256];
+
+            while (true)
             {
                 Console.Write("Waiting for a connection... ");
-                
-                client = server.AcceptTcpClient();
-                Console.WriteLine("Connected!");
-                
-                stream = client.GetStream();
 
-                int i;
-                while((i = stream.Read(bytes, 0, bytes.Length))!=0)
+                using TcpClient client = server.AcceptTcpClient();
+                Console.WriteLine("Connected!");
+                using NetworkStream stream = client.GetStream();
+
+                int count;
+                while ((count = stream.Read(bytes, 0, bytes.Length)) != 0)
                 {
-                    data = Encoding.ASCII.GetString(bytes, 0, i);
-                    Console.WriteLine("Received: {0}", data);
+                    string data = asciiEndocing.GetString(bytes, 0, count);
+                    Console.WriteLine($"Received: {data}");
                 }
             }
         }
-        catch(SocketException e)
+        catch (SocketException e)
         {
-            Console.WriteLine("SocketException: {0}", e);
+            Console.WriteLine($"SocketException: {e}");
         }
         finally
         {
             server.Stop();
-            client.Close();
-            stream.Close();
         }
 
-        Console.WriteLine("\nHit anything to continue...");
+        Console.WriteLine("\nPress anything to continue...");
         Console.Read();
     }
 }

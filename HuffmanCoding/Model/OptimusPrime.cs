@@ -2,36 +2,36 @@ using System.Text;
 
 namespace HuffmanCoding.Model;
 
-public class OptimusPrime
+public static class OptimusPrime
 {
-    public string Encode(string letterChain, Dictionary<char, string> dictionary)
+    public static string Encode(string letterChain, Dictionary<char, string> dictionary)
     {
-        StringBuilder stringBuilder = new StringBuilder();
+        var sb = new StringBuilder(letterChain.Length);
 
         foreach (var letter in letterChain.ToArray())
         {
-            if (dictionary.TryGetValue(letter, out string codedLetter))
+            if (dictionary.TryGetValue(letter, out string? codedLetter))
             {
-                stringBuilder.Append(codedLetter);
+                sb.Append(codedLetter);
             }
         }
 
-        return stringBuilder.ToString();
+        return sb.ToString();
     }
 
-    public string Decode(string codedChain, Dictionary<char, string> dictionary)
+    public static string Decode(string codedChain, Dictionary<char, string> dictionary)
     {
-        StringBuilder helper = new StringBuilder();
-        StringBuilder stringBuilder = new StringBuilder();
+        var stringBuilder = new StringBuilder(codedChain.Length);
 
+        string word = String.Empty;
         foreach (var bit in codedChain)
         {
-            helper.Append(bit);
-            if (dictionary.ContainsValue(helper.ToString()))
+            word += bit;
+            if (dictionary.ContainsValue(word))
             {
-                var key = dictionary.FirstOrDefault(x => x.Value == helper.ToString()).Key;
+                var key = dictionary.FirstOrDefault(x => x.Value == word).Key;
                 stringBuilder.Append(key);
-                helper.Clear();
+                word = String.Empty;
             }
         }
 
