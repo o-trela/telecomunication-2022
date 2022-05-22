@@ -38,4 +38,30 @@ public static class Utils
     {
         return val >= min && val <= max;
     }
+
+    public static byte[] ToBytes(this int value)
+    {
+        byte[] bytes = BitConverter.GetBytes(value);
+        if (BitConverter.IsLittleEndian) Array.Reverse(bytes);
+        return bytes;
+    }
+
+    public static int ToInt32(this byte[] arr)
+    {
+        const int ByteCapacity = Byte.MaxValue + 1;
+        int value = 0;
+        int multiplier = 1;
+        for (int i = arr.Length - 1; i >= 0; i--)
+        {
+            value += arr[i] * multiplier;
+            multiplier *= ByteCapacity;
+        }
+        return value;
+    }
+
+    public static int Min(this (int, int) values)
+    {
+        var (one, two) = values;
+        return one > two ? two : one;
+    }
 }
