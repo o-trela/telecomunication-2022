@@ -30,29 +30,21 @@ public class SocketConnection
             byte[] length = dictionaryData.Length.ToBytes();
             stream.Write(length, 0, length.Length);
             stream.Write(dictionaryData, 0, dictionaryData.Length);
-            Console.WriteLine($"Sent: {String.Join(" ", dictionary)}");
 
             length = messageData.Length.ToBytes();
             stream.Write(length, 0, length.Length);
             stream.Write(messageData, 0, messageData.Length);
-            Console.WriteLine($"Sent: {message}");
         }
-        catch (Exception e)
+        catch (Exception e) when (e is ArgumentNullException or SocketException)
         {
-            if (e is ArgumentNullException or SocketException)
-            {
-                Console.WriteLine($"Exception: {e}");
-            }
-            throw;
+            Console.WriteLine($"Exception: {e}");
         }
-
-        Console.WriteLine("\nPress anything to continue...");
-        Console.Read();
     }
 
-    public void ReceiveData()
+    public string ReceiveData()
     {
-        TcpListener server = null!;
+        TcpListener? server = null;
+        string receivedMessage = String.Empty;
 
         try
         {
@@ -85,7 +77,7 @@ public class SocketConnection
             {
                 int toRead = (dataSize, buffer.Length).Min();
                 stream.Read(buffer, 0, toRead);
-                allBytes.AddRange(new ArraySegment<byte>(buffer, 0, dataSize));
+                allBytes.AddRange(new ArraySegment<byte>(buffer, 0, toRead));
                 dataSize -= toRead;
             }
             Dictionary<char, string> dictionary = Serializer.Deserialize<Dictionary<char, string>>(allBytes.ToArray());
@@ -99,12 +91,11 @@ public class SocketConnection
             {
                 int toRead = (dataSize, buffer.Length).Min();
                 stream.Read(buffer, 0, toRead);
-                allBytes.AddRange(new ArraySegment<byte>(buffer, 0, dataSize));
+                allBytes.AddRange(new ArraySegment<byte>(buffer, 0, toRead));
                 dataSize -= toRead;
             }
 
-            string message = encoding.GetString(allBytes.ToArray());
-            Console.WriteLine($"Receive message: {message}");
+            receivedMessage = encoding.GetString(allBytes.ToArray());
         }
         catch (SocketException e)
         {
@@ -112,10 +103,9 @@ public class SocketConnection
         }
         finally
         {
-            server.Stop();
+            server?.Stop();
         }
 
-        Console.WriteLine("\nPress anything to continue...");
-        Console.Read();
+        return receivedMessage;
     }
 }
