@@ -22,7 +22,6 @@ class Program
         Huffman? huffman;
         Action<string> writer;
 
-
         Console.WriteLine("Want do you want to do?\n" +
             "1. Send\n" +
             "2. Receive");
@@ -44,7 +43,7 @@ class Program
                 data = String.IsNullOrWhiteSpace(text) ? sampleText : text;
                 goto sending;
             case 4:
-                fileManager = PromptFilename(true);
+                fileManager = PromptFilename(false);
                 data = fileManager.ReadString();
                 goto sending;
 
@@ -79,7 +78,7 @@ class Program
                 break;
         }
 
-        FileManager PromptFilename(bool receiver)
+        static FileManager PromptFilename(bool receiver)
         {
             Console.Write("Filename: ");
             string? filename = Console.ReadLine();
