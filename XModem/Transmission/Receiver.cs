@@ -26,11 +26,7 @@ public class Receiver : PortManager
         {
             if (newPacket) _logger.Log($"Packet #{packet}");
 
-            _data = null;
-            while (_data is null)
-            {
-                _data = Read();
-            }
+            WaitForData();
 
             if (IsLastPacket())
             {
@@ -149,6 +145,15 @@ public class Receiver : PortManager
     {
         if (_data is null) throw new NullReferenceException("Data cannot be null!");
         return _data[0] == Global.EOT;
+    }
+
+    private void WaitForData()
+    {
+        _data = null;
+        while (_data is null)
+        {
+            _data = Read();
+        }
     }
 
     private void NotAcknowledged()

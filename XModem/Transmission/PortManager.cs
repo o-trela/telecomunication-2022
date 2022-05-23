@@ -96,7 +96,6 @@ public abstract class PortManager
             crc ^= data[i] << Bits;
             for (var j = 0; j < Bits; j++)
             {
-
                 if ((crc & 0x8000) != 0) crc = (crc << 1) ^ Polynomial;
                 else crc <<= 1;
             }

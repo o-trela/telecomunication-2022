@@ -2,9 +2,9 @@
 
 public static class Code
 {
-    private const int MsgSize = 8;
-    private const int ParitySize = 8;
-    private const int EncodedMsgSize = MsgSize + ParitySize;
+    private static readonly int MsgSize = 8;
+    private static readonly int ParitySize = 8;
+    private static readonly int EncodedMsgSize = MsgSize + ParitySize;
     private static readonly int[,] H =
     {
         {1, 1, 1, 1, 0, 0, 0, 0,  1, 0, 0, 0, 0, 0, 0, 0},

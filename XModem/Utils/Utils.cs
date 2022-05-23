@@ -49,7 +49,7 @@ public static class Utils
         if (probability <= 0.0 || probability > 1.0) return data;
 
         var rng = Random.Shared;
-        if (!(rng.NextDouble() < probability)) return data;
+        if (rng.NextDouble() > probability) return data;
 
         int dataLength = data.Length;
         var dirtyData = new T?[dataLength];

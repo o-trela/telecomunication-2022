@@ -13,7 +13,7 @@ class Program
         const int port = 8080;
         const string sampleText = "Ala ma kota, komputer, dzbanek i wiele innych bardzo ciekawym rzeczy, ale nie zaprezentuje nam ich, bo jest bardzo wstydliwa i nie ma na to ochoty";
 
-        FileManager.EnsureDirectoryIsValid();
+        FileManager.EnsureDirectoryIsValid(true);
 
         int medium;
         int action;
@@ -77,6 +77,8 @@ class Program
             default:
                 break;
         }
+
+        Console.ReadLine();
 
         static FileManager PromptFilename(bool receiver)
         {

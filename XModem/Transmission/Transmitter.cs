@@ -20,7 +20,7 @@ public class Transmitter : PortManager
 
         int dataLength = _data.Length;
         int packets = dataLength <= 0 ? 0 : (dataLength - 1) / Global.BlockSize + 1;
-        ;
+        
         for (var i = 0; i < packets; i++)
         {
             _logger.Log($"Packet #{i + 1}");
