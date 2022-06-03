@@ -1,10 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCorrection", "CodeCorrection\CodeCorrection.csproj", "{BFF77726-C9DA-47E4-AF51-AA951321C652}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32421.90
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeCorrection", "CodeCorrection\CodeCorrection.csproj", "{BFF77726-C9DA-47E4-AF51-AA951321C652}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XModem", "XModem\XModem.csproj", "{96A4368C-24C5-48AC-ABD9-06ABD1D04C08}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XModem", "XModem\XModem.csproj", "{96A4368C-24C5-48AC-ABD9-06ABD1D04C08}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HuffmanCoding", "HuffmanCoding\HuffmanCoding.csproj", "{2380B1BE-6F19-469E-A666-326998AF0373}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HuffmanCoding", "HuffmanCoding\HuffmanCoding.csproj", "{2380B1BE-6F19-469E-A666-326998AF0373}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioConverter", "AudioConverter\AudioConverter.csproj", "{949F4EC8-563B-4343-990A-124914930F07}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,5 +29,15 @@ Global
 		{2380B1BE-6F19-469E-A666-326998AF0373}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2380B1BE-6F19-469E-A666-326998AF0373}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2380B1BE-6F19-469E-A666-326998AF0373}.Release|Any CPU.Build.0 = Release|Any CPU
+		{949F4EC8-563B-4343-990A-124914930F07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{949F4EC8-563B-4343-990A-124914930F07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{949F4EC8-563B-4343-990A-124914930F07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{949F4EC8-563B-4343-990A-124914930F07}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D124C6D2-7706-4347-8353-5AC08103567E}
 	EndGlobalSection
 EndGlobal
