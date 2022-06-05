@@ -30,6 +30,7 @@ internal static class Recorder
         
         audioRecorder?.StopRecording();
         isRecording = false;
+        Dispose();
     }
 
     private static void WriteWave(object? sender, WaveInEventArgs args)
