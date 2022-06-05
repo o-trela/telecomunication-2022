@@ -31,10 +31,10 @@ public static class AudioManager
     {
         int outCount = WaveInterop.waveOutGetNumDevs();
         WaveOutCapabilities[] devices = new WaveOutCapabilities[outCount];
+        WaveOutCapabilities caps = new();
+        int structSize = Marshal.SizeOf(caps);
         for (int i = 0; i < outCount; i++)
         {
-            var caps = new WaveOutCapabilities();
-            var structSize = Marshal.SizeOf(caps);
             MmException.Try(WaveInterop.waveOutGetDevCaps((IntPtr)i, out caps, structSize), "waveOutGetDevCaps");
             devices[i] = caps;
         }
