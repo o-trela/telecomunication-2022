@@ -11,7 +11,7 @@ const string defInputFileName = "rafal.wav";
 string filename;
 int deviceNr;
 int choice;
-int sampleRate = 4100;
+int sampleRate = 44100;
 int bits = 24;
 int channels = 1;
 
@@ -26,7 +26,7 @@ if (choice == 1)
 {
     Console.WriteLine("Wave format:");
     Console.Write($"Sample Rate (def: {sampleRate}): ");
-    AudioManager.SampleRate = Utils.ReadInt32(1, 384000, def: sampleRate, predicate: x => x % 2400 == 0 || x % 4100 == 0);
+    AudioManager.SampleRate = Utils.ReadInt32(1, 384000, def: sampleRate, predicate: x => x % 24000 == 0 || x % 44100 == 0);
     
     Console.Write($"Bits (def: {bits}): ");
     AudioManager.Bits = Utils.ReadInt32(1, 32, def: bits, predicate: x => x % 8 == 0);
